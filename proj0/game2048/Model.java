@@ -5,7 +5,7 @@ import java.util.Observable;
 
 
 /** The state of a game of 2048.
- *  @author TODO: YOUR NAME HERE
+ *  @author TODO: LEE BROUSE
  */
 public class Model extends Observable {
     /** Current contents of the board. */
@@ -114,6 +114,7 @@ public class Model extends Observable {
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
 
+
         checkGameOver();
         if (changed) {
             setChanged();
@@ -138,6 +139,15 @@ public class Model extends Observable {
      * */
     public static boolean emptySpaceExists(Board b) {
         // TODO: Fill in this function.
+
+        // Tool: only use tile(int col, int row) 和 size()方法
+        for (int i=0;i<b.size();i++){
+            for (int j=0;j<b.size();j++){
+               if (b.tile(i,j)==null){
+                   return true;
+               }
+            }
+        }
         return false;
     }
 
@@ -148,6 +158,18 @@ public class Model extends Observable {
      */
     public static boolean maxTileExists(Board b) {
         // TODO: Fill in this function.
+        for (int i=0;i< b.size();i++){
+            for ( int j=0;j<b.size();j++){
+
+                if (b.tile(i,j)==null){
+                    continue;
+                }
+
+                if (b.tile(i,j).value()==MAX_PIECE){
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -159,7 +181,59 @@ public class Model extends Observable {
      */
     public static boolean atLeastOneMoveExists(Board b) {
         // TODO: Fill in this function.
-        return false;
+        //NOTE: 注意矩阵的边界问题;
+        //函数的对比过程：
+        //1.自下而上至当前上边界，进行比较。
+        //2.再自左而右至当前右边界，进行比较。
+
+        //判断是否有empty space 在board中
+        if (emptySpaceExists(b)) {
+            return true;
+        }
+
+        //m用于控制矩阵的上边界；
+//        for (int m=0;m<b.size();m++) {
+//
+//            for (int i = 0; i < b.size(); i++) {
+//                int p = i;//用于相邻col比较
+//
+//                //col遍历&比较
+//                int j = 0;
+//                for (; j <= m; j++) {
+//                    int t = j;//用于相邻row比较
+//
+//                    if (t == b.size() - 1) {
+//                        break;
+//                    }
+//
+//                    if (b.tile(i, j).value() == b.tile(i, ++t).value()) {
+//                        return true;
+//                    }
+//                }
+//
+//                if (p == b.size() - 1) {
+//                   break;
+//                }
+//
+//                if (b.tile(i, j).value() == b.tile(++p, j).value()) {
+//                    return true;
+//                }
+//            }
+//        }
+        //简化版：
+        for (int i = 0; i < b.size(); i++) {
+            for (int j = 0; j < b.size(); j++) {
+                // 检查右侧相邻瓦片
+                if (j < b.size() - 1 && b.tile(i, j).value() == b.tile(i, j + 1).value()) {
+                    return true;
+                }
+                // 检查下方相邻瓦片
+                if (i < b.size() - 1 && b.tile(i, j).value() == b.tile(i + 1, j).value()) {
+                    return true;
+                }
+            }
+        }
+            return false;
     }
 
 
