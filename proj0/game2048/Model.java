@@ -115,22 +115,75 @@ public class Model extends Observable {
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
-        for (int c=0;c< board.size();c++){
-            for (int r=0;r< board.size();r++){
-                Tile t=board.tile(c,r);
-                if (board.tile(c,r)!=null){
-                    board.move(c,3,t);
-                    changed =true;
-                    score+=7;
+
+        /**4 chances of board.move():
+         *1:board.move(c,3,t); press up
+         *2:board.move(c,0,t); press down
+         *3:board.move(0,r,t); press left
+         *4:board.move(3,r,t); press right
+         **/
+
+        // set the side to be NORTH, if it is not north, therefor easy to manipulate
+       if (side != Side.NORTH) {
+           board.setViewingPerspective(side);
+       }
+
+        // press up, and turn all the tiles be adjacent
+        int board_size = board.size();
+        for (int colIndex = 0; colIndex < board_size; ++colIndex){ // move all tiles in a line adjacent, col by col
+            int nullCount = 0; // count how many null tile is before current tile in a line
+            for (int rowIndex = board_size -1; rowIndex >= 0; --rowIndex){
+                if(board.tile(colIndex, rowIndex) == null) {
+                    nullCount++;
+                    continue;
+                }
+                Tile t = board.tile(colIndex, rowIndex);
+                if(board.tile(colIndex, rowIndex+nullCount) == null) {
+                    board.move(colIndex, rowIndex + nullCount, t);
+                    changed = true;
                 }
             }
         }
 
+        // merge if possible
+        for (int colIndex = 0; colIndex < board_size; ++colIndex){
+            for (int rowIndex = board_size -1; rowIndex > 0; --rowIndex){
+                if((board.tile(colIndex, rowIndex) != null) && (board.tile(colIndex, rowIndex -1) != null) && (board.tile(colIndex, rowIndex).value() == board.tile(colIndex, rowIndex - 1).value())){
+                    //Tile currentTile = board.tile(colIndex, rowIndex);
+                    Tile nextTile = board.tile(colIndex, rowIndex-1);
+                    board.move(colIndex, rowIndex, nextTile);
+                    score += nextTile.value()*2;
+                    changed = true;
+                }
+            }
+        }
+
+        // turn all tiles together again after merge
+        for (int colIndex = 0; colIndex < board_size; ++colIndex){ // move all tiles in a line adjacent, col by col
+            int nullCount = 0; // count how many null tile is before current tile in a line
+            for (int rowIndex = board_size -1; rowIndex >= 0; --rowIndex){
+                if(board.tile(colIndex, rowIndex) == null) {
+                    nullCount++;
+                    continue;
+                }
+                Tile t = board.tile(colIndex, rowIndex);
+                if(board.tile(colIndex, rowIndex+nullCount) == null) {
+                    board.move(colIndex, rowIndex+nullCount, t);
+                }
+            }
+        }
+
+        // turn the side back, if the origin side is not north
+        if(side != Side.NORTH) {
+            board.setViewingPerspective(Side.NORTH);
+        }
 
         checkGameOver();
+
         if (changed) {
             setChanged();
         }
+
         return changed;
     }
 
