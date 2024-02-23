@@ -1,12 +1,12 @@
 package deque;
 
-public class LinkedListDeque {
+public class LinkedListDeque<Leebrouse>{
     public class IntNode{
-        int item;
+        public Leebrouse item;
         public IntNode next;
         public IntNode pre;
 
-        public IntNode(int i,IntNode n,IntNode p){
+        public IntNode(Leebrouse i,IntNode n,IntNode p){
             item=i;
             next=n;
             pre=p;
@@ -18,28 +18,28 @@ public class LinkedListDeque {
 
     //创建一个空的链表双端队列。
     public LinkedListDeque(){
-        sentinel=new IntNode(63,null,null);
+        sentinel=new IntNode(null,null,null);
         sentinel.next=sentinel;
         sentinel.pre=sentinel;
         size=0;
     }
 
     //构建第一个节点
-    public LinkedListDeque(int item){
-        sentinel=new IntNode(63,null,null);
+    public LinkedListDeque(Leebrouse item){
+        sentinel=new IntNode(null,null,null);
         sentinel.next=new IntNode(item,sentinel,sentinel);
         sentinel.pre=sentinel.next;
         size=1;
     }
     //前插
-    public void addFirst(int item){
+    public void addFirst(Leebrouse item){
        sentinel.next=new IntNode(item,sentinel.next,sentinel);
        sentinel.next.next.pre=sentinel.next;
        size++;
     }
 
     //后插
-    public void addLast(int item){
+    public void addLast(Leebrouse item){
         sentinel.pre.next=new IntNode(item,sentinel,sentinel.pre);
         sentinel.pre= sentinel.pre.next;
         size++;
@@ -97,13 +97,13 @@ public class LinkedListDeque {
         return sentinel;
     }
 
-    public int get(int index){
+    public Leebrouse get(int index){
         //Temporary pointer for iteration
         IntNode p=sentinel.next;
 
         //Judge the list is empty or not
         if (size==0){
-            return 0;
+            return null;
         }
 
         //iterate the list to find the intended item
@@ -113,12 +113,27 @@ public class LinkedListDeque {
             }
             p=p.next;
         }
-        return 0;//No!,return 0 as null
+        return null;//No!,return 0 as null
+    }
+
+    private  Leebrouse getRecursive(int index,IntNode p){
+        if(p==null || p==sentinel){
+            return null;
+        }
+
+        if (index<=0){
+            return p.item;
+        }
+
+        return getRecursive(--index,p.next);
+    }
+    public Leebrouse getRecursive(int index){
+        return getRecursive(index,sentinel.next);
     }
 
     public static void main(String[] args) {
         //LinkedListDeque r=new LinkedListDeque();
-        LinkedListDeque t=new LinkedListDeque(8);
+        LinkedListDeque<Integer> t=new LinkedListDeque<>(8);
         t.addFirst(7);
         t.addLast(9);
         //System.out.println(t.isEmpty());
@@ -126,7 +141,9 @@ public class LinkedListDeque {
         //t.removeFirst();
         //t.removeLast();
         //System.out.println(t.get(1));
+        //System.out.println(t.getRecursive(2));
         //t.printDeque();
+
 
     }
 }
