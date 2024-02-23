@@ -24,18 +24,24 @@ public class ArrayDeque<Leebrouse> {
     }
 
     public void addFirst(Leebrouse item){
+
+        if (size == items.length) {
+            resize(size * 2);
+        }
+
        for (int i=size-1;i>=0;i--){
            items[i+1]=items[i];
        }
+
        items[0]=item;
        size++;
     }
 
     public void addLast(Leebrouse item){
 
-            if (size == items.length) {
-                resize(size * 2);
-            }
+         if (size == items.length) {
+             resize(size * 2);
+         }
 
        items[size]=item;
        size++;
@@ -69,9 +75,10 @@ public class ArrayDeque<Leebrouse> {
 
        Leebrouse removeNumber=items[0];
 
-       for (int i=0;i<size-1;i++){
-           items[i]=items[i+1];
+       for (int i=1;i<size;i++){
+           items[i-1]=items[i];
        }
+       items[size-1]=null;
        size--;
        return removeNumber;
     }
@@ -99,8 +106,13 @@ public class ArrayDeque<Leebrouse> {
         t.addFirst(2);
         t.addFirst(1);
         t.addLast(4);
-        //t.removeFirst();
-        //t.removeLast();
+        t.addLast(5);
+        t.addLast(6);
+        t.addLast(7);
+        t.addLast(8);
+        t.addLast(9);
+        t.removeFirst();
+        t.removeLast();
         //System.out.println(t.get(2));
         t.printDeque();
     }
