@@ -71,30 +71,31 @@ public class LinkedListDeque<Leebrouse>{
     }
 
     //删前
-    public IntNode removeFirst(){
+    public Leebrouse removeFirst(){
         if (size==0){
             return null;
         }
 
         //tips:画图
+        IntNode removedNode = sentinel.next;
         sentinel.next= sentinel.next.next;
         sentinel.next.pre= sentinel.next.pre.pre;
         size--;
-        //不能用return sentinel，指针会错乱，在java visualizer可见
-        return sentinel;
+        return removedNode.item;
     }
 
     //删后
-    public IntNode removeLast(){
+    public Leebrouse removeLast(){
         if (size==0){
             return null;
         }
 
         //tips:画图(Using graph)
+        IntNode removedNode = sentinel.pre;
         sentinel.pre=sentinel.pre.pre;
         sentinel.pre.next=sentinel;
         size--;
-        return sentinel;
+        return removedNode.item;
     }
 
     public Leebrouse get(int index){
