@@ -69,7 +69,7 @@ public class ArrayDeque<Leebrouse> {
 
        Leebrouse removeNumber=items[0];
 
-       for (int i=0;i<size;i++){
+       for (int i=0;i<size-1;i++){
            items[i]=items[i+1];
        }
        size--;
