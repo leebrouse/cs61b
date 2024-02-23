@@ -1,23 +1,29 @@
 package deque;
 
 public class ArrayDeque<Leebrouse> {
-   int [] items;
-    int size;
+   private Leebrouse [] items;
+   private  int size;
 
     //构建一个空的ArrayDeque
    public ArrayDeque(){
-        items=new int[8];
+        items=(Leebrouse[]) new Object[8];
         size=0;
    }
 
    //构建一个带有element的ArrayDeque
-    public ArrayDeque(int item){
-       items = new int[8];
+    public ArrayDeque(Leebrouse item){
+        items=(Leebrouse[]) new Object[8];
        items[0]=item;
        size=1;
     }
 
-    public void addFirst(int item){
+    private void resize(int capacity) {
+        Leebrouse[] a = (Leebrouse[])  new Object[capacity];
+        System.arraycopy(items, 0, a, 0, size);
+        items = a;
+    }
+
+    public void addFirst(Leebrouse item){
        for (int i=size-1;i>=0;i--){
            items[i+1]=items[i];
        }
@@ -25,7 +31,12 @@ public class ArrayDeque<Leebrouse> {
        size++;
     }
 
-    public void addLast(int item){
+    public void addLast(Leebrouse item){
+
+            if (size == items.length) {
+                resize(size * 2);
+            }
+
        items[size]=item;
        size++;
     }
@@ -40,7 +51,7 @@ public class ArrayDeque<Leebrouse> {
     }
 
     public void printDeque() {
-        int[] p = items;
+        Leebrouse [] p = items;
         for ( int c=0;c<size;c++){
             if (c == size-1) {
                 System.out.println(p[c]);
@@ -50,10 +61,11 @@ public class ArrayDeque<Leebrouse> {
         }
     }
 
-    public int removeFirst(){
-       int removeNumber=items[0];
+    public Leebrouse removeFirst(){
+       Leebrouse removeNumber=items[0];
+
        if (size==0){
-           return 0;
+           return null;
        }
 
        for (int i=0;i<size;i++){
@@ -63,25 +75,25 @@ public class ArrayDeque<Leebrouse> {
        return removeNumber;
     }
 
-    public int removeLast(){
-        int removeNumber=items[size-1];
+    public Leebrouse removeLast(){
+        Leebrouse removeNumber=items[size-1];
 
         if (size==0){
-            return 0;
+            return null;
         }
 
-        items[size-1]=0;
+        items[size-1]=null;
         size--;
         return removeNumber;
     }
 
-    public int get(int index){
+    public Leebrouse get(int index){
         return items[index];
     }
 
     public static void main(String[] args) {
       //ArrayDeque p=new ArrayDeque();
-        ArrayDeque t=new ArrayDeque(3);
+        ArrayDeque<Integer> t=new ArrayDeque<>(3);
         t.addFirst(2);
         t.addFirst(1);
         t.addLast(4);
