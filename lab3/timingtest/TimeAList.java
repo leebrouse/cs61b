@@ -55,7 +55,6 @@ public class TimeAList {
             times.addLast(times(64000));
             times.addLast(times(128000));
 
-
             AList<Integer> opCounts =new AList<>();
             opCounts.addLast(1000);
             opCounts.addLast(2000);
