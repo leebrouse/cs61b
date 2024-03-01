@@ -122,7 +122,7 @@ public class LinkedListDeque<Leebrouse>{
             return null;
         }
 
-        if (index<=0){
+        if (index==0){
             return p.item;
         }
 
@@ -144,7 +144,6 @@ public class LinkedListDeque<Leebrouse>{
         //System.out.println(t.get(1));
         //System.out.println(t.getRecursive(2));
         //t.printDeque();
-
 
     }
 }

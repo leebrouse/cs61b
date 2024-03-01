@@ -130,9 +130,9 @@ public class Model extends Observable {
 
         // press up, and turn all the tiles be adjacent
         int board_size = board.size();
-        for (int colIndex = 0; colIndex < board_size; ++colIndex){ // move all tiles in a line adjacent, col by col
+        for (int colIndex = 0; colIndex < board_size; colIndex++){ // move all tiles in a line adjacent, col by col
             int nullCount = 0; // count how many null tile is before current tile in a line
-            for (int rowIndex = board_size -1; rowIndex >= 0; --rowIndex){
+            for (int rowIndex = board_size -1; rowIndex >= 0; rowIndex--){
                 if(board.tile(colIndex, rowIndex) == null) {
                     nullCount++;
                     continue;
@@ -146,8 +146,8 @@ public class Model extends Observable {
         }
 
         // merge if possible
-        for (int colIndex = 0; colIndex < board_size; ++colIndex){
-            for (int rowIndex = board_size -1; rowIndex > 0; --rowIndex){
+        for (int colIndex = 0; colIndex < board_size; colIndex++){
+            for (int rowIndex = board_size -1; rowIndex > 0; rowIndex--){
                 if((board.tile(colIndex, rowIndex) != null) && (board.tile(colIndex, rowIndex -1) != null) && (board.tile(colIndex, rowIndex).value() == board.tile(colIndex, rowIndex - 1).value())){
                     //Tile currentTile = board.tile(colIndex, rowIndex);
                     Tile nextTile = board.tile(colIndex, rowIndex-1);
@@ -159,9 +159,9 @@ public class Model extends Observable {
         }
 
         // turn all tiles together again after merge
-        for (int colIndex = 0; colIndex < board_size; ++colIndex){ // move all tiles in a line adjacent, col by col
+        for (int colIndex = 0; colIndex < board_size; colIndex++){ // move all tiles in a line adjacent, col by col
             int nullCount = 0; // count how many null tile is before current tile in a line
-            for (int rowIndex = board_size -1; rowIndex >= 0; --rowIndex){
+            for (int rowIndex = board_size -1; rowIndex >= 0; rowIndex--){
                 if(board.tile(colIndex, rowIndex) == null) {
                     nullCount++;
                     continue;
@@ -187,6 +187,8 @@ public class Model extends Observable {
         return changed;
     }
 
+
+
     /** Checks if the game is over and sets the gameOver variable
      *  appropriately.
      */
@@ -198,6 +200,7 @@ public class Model extends Observable {
     private static boolean checkGameOver(Board b) {
         return maxTileExists(b) || !atLeastOneMoveExists(b);
     }
+
 
     /** Returns true if at least one space on the Board is empty.
      *  Empty spaces are stored as null.
