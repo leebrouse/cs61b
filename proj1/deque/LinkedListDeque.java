@@ -2,13 +2,13 @@ package deque;
 
 import java.util.Iterator;
 
-public class LinkedListDeque<Leebrouse> implements  Iterable<Leebrouse>,Deque<Leebrouse>{
+public class LinkedListDeque<T> implements  Iterable<T>,Deque<T>{
     public class IntNode{
-        public Leebrouse item;
+        public T item;
         public IntNode next;
         public IntNode pre;
 
-        public IntNode(Leebrouse i,IntNode n,IntNode p){
+        public IntNode(T i,IntNode n,IntNode p){
             item=i;
             next=n;
             pre=p;
@@ -27,21 +27,21 @@ public class LinkedListDeque<Leebrouse> implements  Iterable<Leebrouse>,Deque<Le
     }
 
     //构建第一个节点
-    public LinkedListDeque(Leebrouse item){
+    public LinkedListDeque(T item){
         sentinel=new IntNode(null,null,null);
         sentinel.next=new IntNode(item,sentinel,sentinel);
         sentinel.pre=sentinel.next;
         size=1;
     }
     //前插
-    public void addFirst(Leebrouse item){
+    public void addFirst(T item){
        sentinel.next=new IntNode(item,sentinel.next,sentinel);
        sentinel.next.next.pre=sentinel.next;
        size++;
     }
 
     //后插
-    public void addLast(Leebrouse item){
+    public void addLast(T item){
         sentinel.pre.next=new IntNode(item,sentinel,sentinel.pre);
         sentinel.pre= sentinel.pre.next;
         size++;
@@ -73,7 +73,7 @@ public class LinkedListDeque<Leebrouse> implements  Iterable<Leebrouse>,Deque<Le
     }
 
     //删前
-    public Leebrouse removeFirst(){
+    public T removeFirst(){
         if (size==0){
             return null;
         }
@@ -87,7 +87,7 @@ public class LinkedListDeque<Leebrouse> implements  Iterable<Leebrouse>,Deque<Le
     }
 
     //删后
-    public Leebrouse removeLast(){
+    public T removeLast(){
         if (size==0){
             return null;
         }
@@ -100,7 +100,7 @@ public class LinkedListDeque<Leebrouse> implements  Iterable<Leebrouse>,Deque<Le
         return removedNode.item;
     }
 
-    public Leebrouse get(int index){
+    public T get(int index){
         //Temporary pointer for iteration
         IntNode p=sentinel.next;
 
@@ -119,7 +119,7 @@ public class LinkedListDeque<Leebrouse> implements  Iterable<Leebrouse>,Deque<Le
         return null;//No!,return 0 as null
     }
 
-    private  Leebrouse getRecursive(int index,IntNode p){
+    private  T getRecursive(int index,IntNode p){
         if(p==null || p==sentinel){
             return null;
         }
@@ -130,15 +130,15 @@ public class LinkedListDeque<Leebrouse> implements  Iterable<Leebrouse>,Deque<Le
 
         return getRecursive(--index,p.next);
     }
-    public Leebrouse getRecursive(int index){
+    public T getRecursive(int index){
         return getRecursive(index,sentinel.next);
     }
 
-    public Iterator<Leebrouse> iterator(){
+    public Iterator<T> iterator(){
         return new Dequeiterator();
     }
 
-    private class Dequeiterator implements  Iterator<Leebrouse>{
+    private class Dequeiterator implements  Iterator<T>{
         private int curpos;
         public Dequeiterator(){
             curpos=0;
@@ -148,7 +148,7 @@ public class LinkedListDeque<Leebrouse> implements  Iterable<Leebrouse>,Deque<Le
             return curpos<size;
         }
 
-        public Leebrouse next(){
+        public T next(){
             return get(curpos++);
         }
     }
@@ -166,13 +166,13 @@ public class LinkedListDeque<Leebrouse> implements  Iterable<Leebrouse>,Deque<Le
             return false;
         }
 
-        Deque<Leebrouse> other=(Deque<Leebrouse>) o;
+        Deque<T> other=(Deque<T>) o;
         if (other.size()!=this.size){
             return false;
         }
 
         for (int i=0;i<size;i++){
-            if (!this.get(i).equals(other.equals(i))){
+            if (!this.get(i).equals(other.get(i))){
                 return false;
             }
         }

@@ -1,29 +1,29 @@
 package deque;
 import java.util.Iterator;
-public class ArrayDeque<Leebrouse>  implements  Iterable<Leebrouse>,Deque<Leebrouse>{
-   private Leebrouse [] items;
+public class ArrayDeque<T>  implements  Iterable<T>,Deque<T>{
+   private T [] items;
    private  int size;
 
     //构建一个空的ArrayDeque
    public ArrayDeque(){
-        items=(Leebrouse[]) new Object[8];
+        items=(T[]) new Object[8];
         size=0;
    }
 
    //构建一个带有element的ArrayDeque
-    public ArrayDeque(Leebrouse item){
-        items=(Leebrouse[]) new Object[8];
+    public ArrayDeque(T item){
+        items=(T[]) new Object[8];
        items[0]=item;
        size=1;
     }
 
     private void resize(int capacity) {
-        Leebrouse[] a = (Leebrouse[])  new Object[capacity];
+       T[] a = (T[])  new Object[capacity];
         System.arraycopy(items, 0, a, 0, size);
         items = a;
     }
 
-    public void addFirst(Leebrouse item){
+    public void addFirst(T item){
 
         if (size == items.length) {
             resize(size * 2);
@@ -37,7 +37,7 @@ public class ArrayDeque<Leebrouse>  implements  Iterable<Leebrouse>,Deque<Leebro
        size++;
     }
 
-    public void addLast(Leebrouse item){
+    public void addLast(T item){
 
          if (size == items.length) {
              resize(size * 2);
@@ -57,7 +57,7 @@ public class ArrayDeque<Leebrouse>  implements  Iterable<Leebrouse>,Deque<Leebro
     }
 
     public void printDeque() {
-        Leebrouse [] p = items;
+       T [] p = items;
         for ( int c=0;c<size;c++){
             if (c == size-1) {
                 System.out.println(p[c]);
@@ -67,13 +67,13 @@ public class ArrayDeque<Leebrouse>  implements  Iterable<Leebrouse>,Deque<Leebro
         }
     }
 
-    public Leebrouse removeFirst(){
+    public T removeFirst(){
 
        if (size==0){
            return null;
        }
 
-       Leebrouse removeNumber=items[0];
+       T removeNumber=items[0];
 
        for (int i=1;i<size;i++){
            items[i-1]=items[i];
@@ -83,28 +83,28 @@ public class ArrayDeque<Leebrouse>  implements  Iterable<Leebrouse>,Deque<Leebro
        return removeNumber;
     }
 
-    public Leebrouse removeLast(){
+    public T removeLast(){
 
         if (size==0){
             return null;
         }
 
-        Leebrouse removeNumber=items[size-1];
+       T removeNumber=items[size-1];
 
         items[size-1]=null;
         size--;
         return removeNumber;
     }
 
-    public Leebrouse get(int index){
+    public T get(int index){
         return items[index];
     }
 
-    public Iterator<Leebrouse> iterator(){
+    public Iterator<T> iterator(){
         return new Dequeiterator();
     }
 
-    private class Dequeiterator implements  Iterator<Leebrouse>{
+    private class Dequeiterator implements  Iterator<T>{
         private int curpos;
         public Dequeiterator(){
             curpos=0;
@@ -114,8 +114,8 @@ public class ArrayDeque<Leebrouse>  implements  Iterable<Leebrouse>,Deque<Leebro
             return curpos<size;
         }
 
-        public Leebrouse next(){
-            Leebrouse item=items[curpos];
+        public T next(){
+            T item=items[curpos];
             curpos++;
             return item;
         }
@@ -134,13 +134,13 @@ public class ArrayDeque<Leebrouse>  implements  Iterable<Leebrouse>,Deque<Leebro
             return false;
         }
 
-        Deque<Leebrouse> other=(Deque<Leebrouse>) o;
+        Deque<T> other=(Deque<T>) o;
         if (other.size()!=this.size){
             return false;
         }
 
         for (int i=0;i<size;i++){
-            if (!this.get(i).equals(other.equals(i))){
+            if (!this.get(i).equals(other.get(i))){
                 return false;
             }
         }
