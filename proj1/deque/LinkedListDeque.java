@@ -1,6 +1,8 @@
 package deque;
 
-public class LinkedListDeque<Leebrouse>{
+import java.util.Iterator;
+
+public class LinkedListDeque<Leebrouse> implements  Iterable<Leebrouse>,Deque<Leebrouse>{
     public class IntNode{
         public Leebrouse item;
         public IntNode next;
@@ -130,6 +132,51 @@ public class LinkedListDeque<Leebrouse>{
     }
     public Leebrouse getRecursive(int index){
         return getRecursive(index,sentinel.next);
+    }
+
+    public Iterator<Leebrouse> iterator(){
+        return new Dequeiterator();
+    }
+
+    private class Dequeiterator implements  Iterator<Leebrouse>{
+        private int curpos;
+        public Dequeiterator(){
+            curpos=0;
+        }
+
+        public boolean hasNext(){
+            return curpos<size;
+        }
+
+        public Leebrouse next(){
+            return get(curpos++);
+        }
+    }
+
+    public boolean equals(Object o){
+        if (o==this){
+            return true;
+        }
+
+        if (o==null){
+            return false;
+        }
+
+        if (!(o instanceof Deque)){
+            return false;
+        }
+
+        Deque<Leebrouse> other=(Deque<Leebrouse>) o;
+        if (other.size()!=this.size){
+            return false;
+        }
+
+        for (int i=0;i<size;i++){
+            if (!this.get(i).equals(other.equals(i))){
+                return false;
+            }
+        }
+        return true;
     }
 
     public static void main(String[] args) {
