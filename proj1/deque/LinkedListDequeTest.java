@@ -130,7 +130,7 @@ public class LinkedListDequeTest {
             assertEquals("Should have the same value", i, (double) lld1.removeFirst(), 0.0);
         }
 
-        for (double i = 999999; i > 50000; i--) {
+        for (double i = 99999; i > 50000; i--) {
             assertEquals("Should have the same value", i, (double) lld1.removeLast(), 0.0);
         }
 

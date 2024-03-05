@@ -47,9 +47,9 @@ public class ArrayDeque<T>  implements  Iterable<T>,Deque<T>{
        size++;
     }
 
-    public boolean isEmpty(){
-        return size == 0;
-    }
+//    public boolean isEmpty(){
+//        return size == 0;
+//    }
 
     //显示大小
     public int size(){

@@ -48,9 +48,9 @@ public class LinkedListDeque<T> implements  Iterable<T>,Deque<T>{
     }
 
     //判断是否为空
-    public boolean isEmpty(){
-        return size == 0;
-    }
+//    public boolean isEmpty(){
+//        return size == 0;
+//    }
 
     //显示大小
     public int size(){
