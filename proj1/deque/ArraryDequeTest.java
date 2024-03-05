@@ -2,8 +2,7 @@ package deque;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
-//Issue:1.add/remove is not constant time
-//      2.resize
+
 public class ArraryDequeTest {
     @Test
     public void addIsEmptySizeTest() {

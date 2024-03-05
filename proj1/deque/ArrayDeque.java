@@ -1,24 +1,63 @@
 package deque;
 import java.util.Iterator;
+//Issue:1.add/remove is not constant time
+//      2.resize
 public class ArrayDeque<T>  implements  Iterable<T>,Deque<T>{
+    // 数组的初始大小是8
+    private static final int INIT_SIZE = 8;
+    // 对于长度>=16的array，其中的元素个数应该>=4，即负载率最低是0.25
+    private static final double LOWEST_LOAD = 0.25;
+    // 扩充率是1.25，只要数组的元素满了，就给数组扩充成原来的1.25倍
+    private static final double EXPAND_RATE = 1.25;
+    // 收缩率是0.5，如果数组负载<0.25，就
+    private static final double SHRINK_RATE = 0.5;
    private T [] items;
-   private  int size;
+    private int front;
+
+    private int last;
+    private  int size;
+
+
 
     //构建一个空的ArrayDeque
    public ArrayDeque(){
-        items=(T[]) new Object[8];
+        items=(T[]) new Object[INIT_SIZE];
+        front=INIT_SIZE/2;
+        last=INIT_SIZE/2;
         size=0;
    }
 
    //构建一个带有element的ArrayDeque
-    public ArrayDeque(T item){
-        items=(T[]) new Object[8];
-       items[0]=item;
-       size=1;
+//    public ArrayDeque(T item){
+//       items=(T[]) new Object[INIT_SIZE];
+//       items[0]=item;
+//       size=1;
+//    }
+
+    private int minindex(int index){
+       if (size==items.length-1){
+           index=0;
+       }
+       return index-1;
     }
 
-    private void resize(int capacity) {
-       T[] a = (T[])  new Object[capacity];
+    private int plusiindex(int index){
+       if (size==items.length-1){
+           index=0;
+       }
+       return index+1;
+    }
+
+//    private void expand(){
+//
+//    }
+//
+//    private void shrink(){
+//
+//    }
+
+    private void resize(double capacity) {
+       T[] a = (T[])  new Object[(int) capacity];
         System.arraycopy(items, 0, a, 0, size);
         items = a;
     }
@@ -26,30 +65,28 @@ public class ArrayDeque<T>  implements  Iterable<T>,Deque<T>{
     public void addFirst(T item){
 
         if (size == items.length) {
-            resize(size * 2);
+            resize(size * EXPAND_RATE);
         }
 
-       for (int i=size-1;i>=0;i--){
-           items[i+1]=items[i];
-       }
+//       for (int i=size-1;i>=0;i--){
+//           items[i+1]=items[i];
+//       }
 
-       items[0]=item;
+       front=minindex(front);
+       items[front]=item;
        size++;
     }
 
     public void addLast(T item){
 
          if (size == items.length) {
-             resize(size * 2);
+             resize(size * EXPAND_RATE);
          }
 
-       items[size]=item;
-       size++;
+        last=plusiindex(last);
+        items[last]=item;
+        size++;
     }
-
-//    public boolean isEmpty(){
-//        return size == 0;
-//    }
 
     //显示大小
     public int size(){
@@ -73,12 +110,13 @@ public class ArrayDeque<T>  implements  Iterable<T>,Deque<T>{
            return null;
        }
 
-       T removeNumber=items[0];
+       T removeNumber=items[front];
 
-       for (int i=1;i<size;i++){
-           items[i-1]=items[i];
-       }
-       items[size-1]=null;
+//       for (int i=1;i<size;i++){
+//           items[i-1]=items[i];
+//       }
+       items[front]=null;
+       front=plusiindex(front);
        size--;
        return removeNumber;
     }
@@ -89,9 +127,10 @@ public class ArrayDeque<T>  implements  Iterable<T>,Deque<T>{
             return null;
         }
 
-       T removeNumber=items[size-1];
+       T removeNumber=items[last];
 
-        items[size-1]=null;
+        items[last]=null;
+        front=minindex(last);
         size--;
         return removeNumber;
     }
