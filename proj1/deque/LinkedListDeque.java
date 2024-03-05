@@ -179,18 +179,18 @@ public class LinkedListDeque<T> implements  Iterable<T>,Deque<T>{
         return true;
     }
 
-    public static void main(String[] args) {
-        //LinkedListDeque r=new LinkedListDeque();
-        LinkedListDeque<Integer> t=new LinkedListDeque<>(8);
-        t.addFirst(7);
-        t.addLast(9);
-        //System.out.println(t.isEmpty());
-        //System.out.println(t.size());
-        //t.removeFirst();
-        //t.removeLast();
-        //System.out.println(t.get(1));
-        //System.out.println(t.getRecursive(2));
-        //t.printDeque();
-
-    }
+//    public static void main(String[] args) {
+//        //LinkedListDeque r=new LinkedListDeque();
+//        LinkedListDeque<Integer> t=new LinkedListDeque<>(8);
+//        t.addFirst(7);
+//        t.addLast(9);
+//        System.out.println(t.isEmpty());
+//        System.out.println(t.size());
+//        t.removeFirst();
+//        t.removeLast();
+//        System.out.println(t.get(1));
+//        System.out.println(t.getRecursive(2));
+//        t.printDeque();
+//
+//    }
 }

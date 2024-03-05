@@ -186,22 +186,22 @@ public class ArrayDeque<T>  implements  Iterable<T>,Deque<T>{
         return true;
     }
 
-    public static void main(String[] args) {
-      //ArrayDeque p=new ArrayDeque();
-        ArrayDeque<Integer> t=new ArrayDeque<>(3);
-        t.addFirst(2);
-        t.addFirst(1);
-        t.addLast(4);
-        t.addLast(5);
-        t.addLast(6);
-        t.addLast(7);
-        t.addLast(8);
-        t.addLast(9);
-        t.removeFirst();
-        t.removeLast();
-        //System.out.println(t.get(2));
-        t.printDeque();
-    }
+//    public static void main(String[] args) {
+//      //ArrayDeque p=new ArrayDeque();
+//        ArrayDeque<Integer> t=new ArrayDeque<>();
+//        t.addFirst(2);
+//        t.addFirst(1);
+//        t.addLast(4);
+//        t.addLast(5);
+//        t.addLast(6);
+//        t.addLast(7);
+//        t.addLast(8);
+//        t.addLast(9);
+//        t.removeFirst();
+//        t.removeLast();
+//        //System.out.println(t.get(2));
+//        t.printDeque();
+//    }
 }
 
 
