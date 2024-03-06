@@ -104,6 +104,10 @@ public class ArrayDeque<T>  implements  Iterable<T>,Deque<T>{
 
        T removeNumber=items[front];
 
+       if(items[front]==null){
+            return null;
+       }
+
        front=plusiindex(front);
        items[front]=null;
        size--;
@@ -117,6 +121,10 @@ public class ArrayDeque<T>  implements  Iterable<T>,Deque<T>{
         }
 
        T removeNumber=items[last];
+
+        if(items[last]==null){
+            return null;
+        }
 
         last=minindex(last);
         items[last]=null;
@@ -186,17 +194,17 @@ public class ArrayDeque<T>  implements  Iterable<T>,Deque<T>{
         t.addLast(1);
         t.addLast(2);
         t.addLast(3);
-        t.addFirst(4);
-        t.addFirst(5);
+        t.addLast(4);
+        t.addLast(5);
         t.addLast(6);
-        t.addFirst(7);
+        t.addLast(7);
         t.addLast(8);
         //t.addFirst(10);
 //        t.removeFirst();
 //        t.removeLast();
 //        t.removeLast();
 //        t.removeFirst();
-        //System.out.println(t.get(2));
+        System.out.println(t.get(0));
         t.printDeque();
     }
 }

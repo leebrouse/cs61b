@@ -2,7 +2,7 @@ package deque;
 
 import java.util.Comparator;
 
-public class MaxArrayDeque<Leebrosue> extends ArrayDeque<Leebrosue>{
+public class MaxArrayDeque<Leebrosue> extends LinkedListDeque<Leebrosue>{
     private final Comparator<Leebrosue> comparator;
     public MaxArrayDeque(Comparator<Leebrosue> c){
         super();
