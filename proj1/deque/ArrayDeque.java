@@ -42,14 +42,42 @@ public class ArrayDeque<T> {
 
         return index+1;
     }
+
+    private double LoadRate(){
+        return (double) size / items.length;
+    }
+    private void Resize(double capacity){
+        T[] newArray = (T[]) new Object[(int) (capacity)];
+        for (int i=0;i< size;i++){
+            if (this.get(i)==null){
+                continue;
+            }
+
+            newArray[i]=this.get(i);
+        }
+
+        items=newArray;
+        front=0;
+        front=LeftPointer(front);
+        tail=size;
+    }
+
     public void addFirst(T item){
         // 还有resize(),暂留;
+        if (front==tail){
+            Resize(items.length*EXPAND_RATE);
+        }
+
         items[front]=item;
         front=LeftPointer(front);
         size++;
     }
 
     public void addLast(T item){
+        if (front==tail){
+            Resize(items.length*EXPAND_RATE);
+        }
+
         items[tail]=item;
         tail=RightPointer(tail);
         size++;
@@ -87,10 +115,16 @@ public class ArrayDeque<T> {
         }
 
 
+
         T removeNum=items[front];
 
         items[front]=null;
         size--;
+
+        if (LoadRate()<LOWEST_LOAD&&items.length>=16){
+            Resize(items.length*SHRINK_RATE);
+        }
+
         return removeNum;
     }
     public T removeLast(){
@@ -104,18 +138,23 @@ public class ArrayDeque<T> {
 
         items[tail]=null;
         size--;
+
+        if (LoadRate()<LOWEST_LOAD&&items.length>=16){
+            Resize(items.length*SHRINK_RATE);
+        }
+
         return removeNum;
     }
 
-public T get(int index) {
-    if (size == 0) {
-        return null;
+    public T get(int index) {
+        if (size == 0) {
+            return null;
+        }
+        if (index >= size || index < 0) {
+            return null;
+        }
+        return items[(front + index+1) % items.length];
     }
-    if (index >= size || index < 0) {
-        return null;
-    }
-    return items[(front + index+1) % items.length];
-}
 
     public static void main(String[] args) {
         ArrayDeque<Integer> t=new ArrayDeque<>();
@@ -126,12 +165,15 @@ public T get(int index) {
         t.addFirst(5);
         t.addLast(6);
         t.addFirst(7);
+        t.addFirst(0);
+        t.addFirst(10);
+        t.addLast(11);
         t.removeLast();
-        t.removeFirst();
-        t.removeLast();
-        //t.removeFirst();
-        //t.addLast(8);
-        System.out.println(t.get(3));
+//        t.removeFirst();
+//        t.removeLast();
+//        t.removeFirst();
+//        t.addLast(8);
+        System.out.println(t.get(0));
         t.printDeque();
     }
 }
