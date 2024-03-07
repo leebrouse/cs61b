@@ -6,7 +6,7 @@ import java.util.Iterator;
  * @apiNote 实现基于ARRAY的双端队列
  * 使用双指针，就像队列一样来维护数组
  * */
-public class ArrayDeque<T> {
+public class ArrayDeque<T> implements Iterable<T>,Deque<T> {
     // 数组的初始大小是8
     private static final int INIT_SIZE = 8;
     // 对于长度>=16的array，其中的元素个数应该>=4，即负载率最低是0.25
@@ -155,6 +155,48 @@ public class ArrayDeque<T> {
         }
         return items[(front + index+1) % items.length];
     }
+
+    public Iterator<T> iterator(){
+        return new DequeIterator();
+    }
+
+    private class DequeIterator implements Iterator<T> {
+        private int curPos; // 表示即将访问的索引位置，初始即将访问索引0
+        DequeIterator() {
+            curPos = 0;
+        }
+
+        public boolean hasNext() {
+            return curPos < size;
+        }
+
+        public T next() {
+            return get(curPos++);
+        }
+    }
+
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (!(o instanceof Deque)) {
+            return false;
+        }
+        Deque<T> other = (Deque<T>) o;
+        if (other.size() != this.size()) {
+            return false;
+        }
+        for (int i = 0; i < this.size(); i++) {
+            if (!this.get(i).equals(other.get(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     public static void main(String[] args) {
         ArrayDeque<Integer> t=new ArrayDeque<>();
