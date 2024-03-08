@@ -24,24 +24,20 @@ public class TestArrayDequeEC {
         List<String> strings=new ArrayList<>();
 
         for(int i=0;i<100;i++){
-            int MethodSelector = StdRandom.uniform(4);
+            int MethodSelector = StdRandom.uniform(0,4);
             switch (MethodSelector){
                 case 0:
                         strings.add("addFirst("+i+")");
                         solution.addFirst(i);
                         student.addFirst(i);
-                        Integer expect=solution.get(0);
-                        Integer actual=student.get(0);
-                        assertEquals(ErrorShow(strings),expect,actual);
+                        assertEquals(ErrorShow(strings),solution.get(0),student.get(0));
                         break;
 
                 case 1:
                         strings.add("addLast("+i+")");
                         solution.addLast(i);
                         student.addLast(i);
-                        Integer expect1=solution.get(solution.size()-1);
-                        Integer actual1=student.get(student.size()-1);
-                        assertEquals(ErrorShow(strings),expect1,actual1);
+                        assertEquals(ErrorShow(strings),solution.get(solution.size()-1),student.get(student.size()-1));
                         break;
 
                 case 2:
