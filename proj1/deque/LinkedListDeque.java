@@ -2,181 +2,171 @@ package deque;
 
 import java.util.Iterator;
 
-public class LinkedListDeque<T> implements  Iterable<T>,Deque<T>{
-    public class IntNode{
+public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
+    // 定义节点内部类
+    public class IntNode {
         public T item;
         public IntNode next;
         public IntNode pre;
 
-        public IntNode(T i,IntNode n,IntNode p){
-            item=i;
-            next=n;
-            pre=p;
+        // 节点构造函数
+        public IntNode(T i, IntNode n, IntNode p) {
+            item = i;
+            next = n;
+            pre = p;
         }
     }
 
     int size;
     public IntNode sentinel;
 
-    //创建一个空的链表双端队列。
-    public LinkedListDeque(){
-        sentinel=new IntNode(null,null,null);
-        sentinel.next=sentinel;
-        sentinel.pre=sentinel;
-        size=0;
+    // 创建一个空的链表双端队列。
+    public LinkedListDeque() {
+        sentinel = new IntNode(null, null, null);
+        sentinel.next = sentinel;
+        sentinel.pre = sentinel;
+        size = 0;
     }
 
-    //构建第一个节点
-    public LinkedListDeque(T item){
-        sentinel=new IntNode(null,null,null);
-        sentinel.next=new IntNode(item,sentinel,sentinel);
-        sentinel.pre=sentinel.next;
-        size=1;
-    }
-    //前插
-    public void addFirst(T item){
-       sentinel.next=new IntNode(item,sentinel.next,sentinel);
-       sentinel.next.next.pre=sentinel.next;
-       size++;
+    // 构造只有一个元素的双端队列
+    public LinkedListDeque(T item) {
+        sentinel = new IntNode(null, null, null);
+        sentinel.next = new IntNode(item, sentinel, sentinel);
+        sentinel.pre = sentinel.next;
+        size = 1;
     }
 
-    //后插
-    public void addLast(T item){
-        sentinel.pre.next=new IntNode(item,sentinel,sentinel.pre);
-        sentinel.pre= sentinel.pre.next;
+    // 在双端队列的头部添加元素
+    public void addFirst(T item) {
+        sentinel.next = new IntNode(item, sentinel.next, sentinel);
+        sentinel.next.next.pre = sentinel.next;
         size++;
     }
 
-    //判断是否为空
-//    public boolean isEmpty(){
-//        return size == 0;
-//    }
+    // 在双端队列的尾部添加元素
+    public void addLast(T item) {
+        sentinel.pre.next = new IntNode(item, sentinel, sentinel.pre);
+        sentinel.pre = sentinel.pre.next;
+        size++;
+    }
 
-    //显示大小
-    public int size(){
+    // 获取双端队列的大小
+    public int size() {
         return size;
     }
 
-    //遍历链表
-    public void printDeque(){
-        IntNode t=sentinel.next;
-
-        while(t!=sentinel){
-            if (t.next==sentinel){
+    // 遍历打印双端队列
+    public void printDeque() {
+        IntNode t = sentinel.next;
+        while (t != sentinel) {
+            if (t.next == sentinel) {
                 System.out.println(t.item);
-            }else {
-                System.out.print(t.item+"->");
+            } else {
+                System.out.print(t.item + "->");
             }
-            t=t.next;
+            t = t.next;
         }
-
     }
 
-    //删前
-    public T removeFirst(){
-        if (size==0){
+    // 从双端队列的头部删除元素
+    public T removeFirst() {
+        if (size == 0) {
             return null;
         }
-
-        //tips:画图
         IntNode removedNode = sentinel.next;
-        sentinel.next= sentinel.next.next;
-        sentinel.next.pre= sentinel.next.pre.pre;
+        sentinel.next = sentinel.next.next;
+        sentinel.next.pre = sentinel;
         size--;
         return removedNode.item;
     }
 
-    //删后
-    public T removeLast(){
-        if (size==0){
+    // 从双端队列的尾部删除元素
+    public T removeLast() {
+        if (size == 0) {
             return null;
         }
-
-        //tips:画图(Using graph)
         IntNode removedNode = sentinel.pre;
-        sentinel.pre=sentinel.pre.pre;
-        sentinel.pre.next=sentinel;
+        sentinel.pre = sentinel.pre.pre;
+        sentinel.pre.next = sentinel;
         size--;
         return removedNode.item;
     }
 
-    public T get(int index){
-        //Temporary pointer for iteration
-        IntNode p=sentinel.next;
-
-        //Judge the list is empty or not
-        if (size==0){
+    // 获取指定位置的元素
+    public T get(int index) {
+        if (size == 0 || index >= size) {
             return null;
         }
-
-        //iterate the list to find the intended item
-        for (int c=0;c<size;c++){
-            if (c==index){
+        IntNode p = sentinel.next;
+        for (int c = 0; c < size; c++) {
+            if (c == index) {
                 return p.item;
             }
-            p=p.next;
+            p = p.next;
         }
-        return null;//No!,return 0 as null
+        return null;
     }
 
-    private  T getRecursive(int index,IntNode p){
-        if(p==null || p==sentinel){
+    // 递归方式获取指定位置的元素
+    private T getRecursive(int index, IntNode p) {
+        if (p == null || p == sentinel) {
             return null;
         }
-
-        if (index==0){
+        if (index == 0) {
             return p.item;
         }
-
-        return getRecursive(--index,p.next);
-    }
-    public T getRecursive(int index){
-        return getRecursive(index,sentinel.next);
+        return getRecursive(--index, p.next);
     }
 
-    public Iterator<T> iterator(){
-        return new Dequeiterator();
+    // 递归方式获取指定位置的元素
+    public T getRecursive(int index) {
+        return getRecursive(index, sentinel.next);
     }
 
-    private class Dequeiterator implements  Iterator<T>{
+    // 实现迭代器
+    public Iterator<T> iterator() {
+        return new DequeIterator();
+    }
+
+    // 内部类实现迭代器
+    private class DequeIterator implements Iterator<T> {
         private int curpos;
-        public Dequeiterator(){
-            curpos=0;
+
+        public DequeIterator() {
+            curpos = 0;
         }
 
-        public boolean hasNext(){
-            return curpos<size;
+        public boolean hasNext() {
+            return curpos < size;
         }
 
-        public T next(){
+        public T next() {
             return get(curpos++);
         }
     }
 
-    public boolean equals(Object o){
-        if (o==this){
+    // 判断双端队列是否相等
+    public boolean equals(Object o) {
+        if (o == this) {
             return true;
         }
-
-        if (o==null){
+        if (o == null) {
+            return false;
+        }
+        if (!(o instanceof Deque)) {
             return false;
         }
 
-        if (!(o instanceof Deque)){
+        Deque<T> other = (Deque<T>) o;
+        if (other.size() != this.size) {
             return false;
         }
-
-        Deque<T> other=(Deque<T>) o;
-        if (other.size()!=this.size){
-            return false;
-        }
-
-        for (int i=0;i<size;i++){
-            if (!this.get(i).equals(other.get(i))){
+        for (int i = 0; i < size; i++) {
+            if (!this.get(i).equals(other.get(i))) {
                 return false;
             }
         }
         return true;
     }
-
 }
+
