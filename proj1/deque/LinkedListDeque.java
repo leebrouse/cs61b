@@ -4,7 +4,7 @@ import java.util.Iterator;
 
 public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
     // 定义节点内部类
-    public class IntNode {
+    private class IntNode {
         public T item;
         public IntNode next;
         public IntNode pre;
@@ -17,8 +17,8 @@ public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
         }
     }
 
-    int size;
-    public IntNode sentinel;
+    private int size;
+    private IntNode sentinel;
 
     // 创建一个空的链表双端队列。
     public LinkedListDeque() {
