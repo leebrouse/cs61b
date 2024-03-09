@@ -1,5 +1,7 @@
 package flik;
 
+import java.util.Objects;
+
 /** An Integer tester created by Flik Enterprises.
  * @author Josh Hug
  * */
@@ -8,8 +10,8 @@ public class Flik {
      *  @param b Value 2
      *  @return Whether a and b are the same */
 
-    public static boolean isSameNumber(int a, int b) {
-        return a == b;
+    public static boolean isSameNumber(Integer a, Integer b) {
+        return Objects.equals(a, b);
     }
 
 
