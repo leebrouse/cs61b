@@ -50,9 +50,12 @@ public class Repository {
     }
 
     public static void add(File name){
-        File storeFile=join(Store_DIR,name.toString());
-
-        Utils.writeContents(storeFile, Utils.readContents(name));
+        if (name.exists()) {
+            File storeFile = join(Store_DIR, name.toString());
+            Utils.writeContents(storeFile, Utils.readContents(name));
+        }else {
+            System.out.println("File does not exist.");
+        }
 //       Utils.readObject();
     }
 }
