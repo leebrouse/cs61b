@@ -3,14 +3,14 @@ package bstmap;
 import java.util.Iterator;
 import java.util.Set;
 
-public class BSTMap<K extends  Comparable, V>  implements Map61B<K , V>{
-    public class BSTNode{
+public class BSTMap<K extends  Comparable<K>, V>  implements Map61B<K , V>{
+    private class BSTNode{
         private K key;
         private V value;
         private BSTNode leftNode;
         private BSTNode rightNode ;
 
-        public BSTNode get(K k) {
+        private BSTNode get(K k) {
             if (k != null && k.equals(key)){
                 return this;
             }
@@ -26,7 +26,7 @@ public class BSTMap<K extends  Comparable, V>  implements Map61B<K , V>{
             }
         }
 
-        public BSTNode(K key, V value,BSTNode leftNode,BSTNode rightNode){
+        private BSTNode(K key, V value,BSTNode leftNode,BSTNode rightNode){
             this.key=key;
             this.value=value;
             this.leftNode=leftNode;
@@ -34,8 +34,8 @@ public class BSTMap<K extends  Comparable, V>  implements Map61B<K , V>{
         }
     }
 
-    public int size=0;
-    public BSTNode root;
+    private int size=0;
+    private BSTNode root;
 
     @Override
     public void clear() {
@@ -54,7 +54,7 @@ public class BSTMap<K extends  Comparable, V>  implements Map61B<K , V>{
         } else if (key.compareTo(node.key) > 0) {
             return containsKeyHelper(key, node.rightNode);
         } else {
-            return true; // 找到匹配的键
+            return true;
         }
     }
 
@@ -78,7 +78,7 @@ public class BSTMap<K extends  Comparable, V>  implements Map61B<K , V>{
         } else if (key.compareTo(node.key) > 0) {
             return getHelper(key, node.rightNode);
         } else {
-            return node.value; // 找到匹配的键，返回对应的值
+            return node.value;
         }
     }
     @Override
@@ -117,6 +117,19 @@ public class BSTMap<K extends  Comparable, V>  implements Map61B<K , V>{
         root = putHelper(key, value, root);
     }
 
+    public void printInOrder() {
+        printInOrderHelper(root);
+    }
+
+    private void printInOrderHelper(BSTNode node) {
+        if (node == null) {
+            return;
+        }
+
+        printInOrderHelper(node.leftNode); // 递归遍历左子树
+        System.out.println(node.key + ": " + node.value); // 打印当前节点
+        printInOrderHelper(node.rightNode); // 递归遍历右子树
+    }
 
     @Override
     public Set<K> keySet() {
