@@ -26,7 +26,7 @@ public class Main {
                     return ;
                 }
 
-                Repository.initgit();
+                Repository.init();
                 break;
             case "add":
                 if(args.length != 2){
@@ -35,10 +35,15 @@ public class Main {
                 }
 
                 // TODO: handle the `add [filename]` command
-                Repository.add(new File(args[1]));
+                Repository.add(args[1]);
                 break;
             // TODO: FILL THE REST IN
             case "commit":
+                if(args.length != 2){
+                    System.out.println("The commit Usage: commit  [message]");
+                    return ;
+                }
+                Repository.commit(args[1]);
                 break;
             default:
                 System.out.println("Command is not exist ");

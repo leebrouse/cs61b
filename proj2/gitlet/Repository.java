@@ -1,8 +1,11 @@
 package gitlet;
 
 import java.io.File;
-import java.io.Serializable;
 
+
+import static gitlet.Blobs.Index_DIR;
+import static gitlet.Commit.Commit_DIR;
+import static gitlet.Stage.Info_DIR;
 import static gitlet.Utils.*;
 
 // TODO: any imports you need here
@@ -32,30 +35,55 @@ public class Repository {
     /** The .gitlet directory. */
     public static final File GITLET_DIR = join(CWD, ".gitlet");
 
-    public static final File Store_DIR = join(GITLET_DIR, "Store");
-    public static final File Commit_DIR = join(GITLET_DIR, "Commit");
+    //Two pointer of the commit: 1.Master,2.Head
+    public static Commit master,head;
 
     /* TODO: fill in the rest of this class. */
-    public static void initgit(){
+    public static void init(){
         if (!GITLET_DIR.mkdir()){
             System.out.println("A Gitlet version-control system already exists in the current directory.");
         }
 
-        Store_DIR.mkdir();
         Commit_DIR.mkdir();
+        Index_DIR.mkdir();
+        Info_DIR.mkdir();
 
-        Commit commit=new Commit();
+        Commit initcommit=new Commit();
+        master=initcommit;
+        head=initcommit;
+
         File initcommitFile=join(Commit_DIR,"initialCommit");
-        Utils.writeObject(initcommitFile,commit);
+        Utils.writeObject(initcommitFile,initcommit);
     }
 
-    public static void add(File name){
-        if (name.exists()) {
-            File storeFile = join(Store_DIR, name.toString());
-            Utils.writeContents(storeFile, Utils.readContents(name));
-        }else {
-            System.out.println("File does not exist.");
-        }
-//       Utils.readObject();
+    public static void add(String fileName){
+        /**思路：
+            1.同过判断是否为完全的hashcode，判断是否完全相同的file，true则不进行操作。
+            2.当使用add 时要把文件进行hashcode，并把副本放入blobs，在把副本存入addstage
+            3.当commit时清空addstage区
+            4.stage区有两个区add和remove
+        **/
+      Blobs blob=new Blobs();
+      if (blob.makeindex(fileName)){
+          Stage addStage=new Stage();
+          addStage.setAddStage(fileName);
+      }
+
     }
+
+    public static void commit(String message) {
+        if(Stage.addStage.isEmpty()){
+            System.out.println("No changes added to the commit.");
+        }else if (message==null){
+            System.out.println("Please enter a commit message");
+        }else{
+            Commit newcommit=new Commit(message);
+            newcommit.addCommit();
+        }
+    }
+
+    public static void checkout (String message){
+
+    }
+
 }
