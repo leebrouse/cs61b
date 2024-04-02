@@ -34,9 +34,9 @@ public class Repository {
     public static final File CWD = new File(System.getProperty("user.dir"));
     /** The .gitlet directory. */
     public static final File GITLET_DIR = join(CWD, ".gitlet");
-
-    //Two pointer of the commit: 1.Master,2.Head
-    public static Commit master,head;
+    private static File addstage=join(GITLET_DIR,"addstage");
+    private static File removalstage=join(GITLET_DIR,"removalstage");
+    private static File HEAD;
 
     /* TODO: fill in the rest of this class. */
     public static void init(){
@@ -44,13 +44,16 @@ public class Repository {
             System.out.println("A Gitlet version-control system already exists in the current directory.");
         }
 
+        addstage.mkdir();
+        removalstage.mkdir();
+
+        HEAD=join(GITLET_DIR,"HEAD");
+        writeContents(HEAD,"*master");
+
         Commit_DIR.mkdir();
         Index_DIR.mkdir();
-        Info_DIR.mkdir();
 
         Commit initcommit=new Commit();
-        master=initcommit;
-        head=initcommit;
 
         File initcommitFile=join(Commit_DIR,"initialCommit");
         Utils.writeObject(initcommitFile,initcommit);
@@ -63,23 +66,19 @@ public class Repository {
             3.当commit时清空addstage区
             4.stage区有两个区add和remove
         **/
+
       Blobs blob=new Blobs();
+      File name=join(CWD,fileName);
+
       if (blob.makeindex(fileName)){
-          Stage addStage=new Stage();
-          addStage.setAddStage(fileName);
+          File addfile=join(addstage,fileName);
+          writeObject(addfile,name);
       }
 
     }
 
     public static void commit(String message) {
-        if(Stage.addStage.isEmpty()){
-            System.out.println("No changes added to the commit.");
-        }else if (message==null){
-            System.out.println("Please enter a commit message");
-        }else{
-            Commit newcommit=new Commit(message);
-            newcommit.addCommit();
-        }
+
     }
 
     public static void checkout (String message){

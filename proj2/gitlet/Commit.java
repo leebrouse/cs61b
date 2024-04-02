@@ -32,23 +32,24 @@ public class Commit implements Serializable {
     public static final File Commit_DIR = join(GITLET_DIR, "Commit");
     private String message;
     private Date time;
-    private Commit parent;
+    private String parentID;
 //    private TreeMap commitTree;
 
     /* TODO: fill in the rest of this class. */
     public Commit(){
         this.message="Initial commit ";
         this.time= new Date(0);
-        this.parent=null;
+        this.parentID=null;
     }
 
-    public Commit(String message){
+    public Commit(String message,String parentID){
         this.message=message;
         this.time= new Date();
+        this.parentID=parentID;
     }
 
     public void addCommit() {
-        this.setParent(parent);
+        Commit commit=new Commit();
         this.savecommit();
         Stage.addStage.clear();
     }
@@ -57,11 +58,5 @@ public class Commit implements Serializable {
         File newCommit=join(Commit_DIR,this.message);
         writeObject(newCommit,this);
     }
-
-    private void setParent(Commit parent) {
-        this.parent = parent;
-    }
-
-
 
 }
