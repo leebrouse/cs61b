@@ -6,11 +6,12 @@ package gitlet;
 import java.io.File;
 import java.io.Serializable;
 import java.util.Date; // TODO: You'll likely use this in this class
+import java.util.HashMap;
 import java.util.TreeMap;
 
 import static gitlet.Repository.GITLET_DIR;
-import static gitlet.Utils.join;
-import static gitlet.Utils.writeObject;
+import static gitlet.Repository.addstage;
+import static gitlet.Utils.*;
 
 
 /** Represents a gitlet commit object.
@@ -33,7 +34,6 @@ public class Commit implements Serializable {
     private String message;
     private Date time;
     private String parentID;
-//    private TreeMap commitTree;
 
     /* TODO: fill in the rest of this class. */
     public Commit(){
@@ -46,17 +46,6 @@ public class Commit implements Serializable {
         this.message=message;
         this.time= new Date();
         this.parentID=parentID;
-    }
-
-    public void addCommit() {
-        Commit commit=new Commit();
-        this.savecommit();
-        Stage.addStage.clear();
-    }
-
-    private void savecommit(){
-        File newCommit=join(Commit_DIR,this.message);
-        writeObject(newCommit,this);
     }
 
 }

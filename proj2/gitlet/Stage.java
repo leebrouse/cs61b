@@ -7,7 +7,6 @@ import static gitlet.Repository.GITLET_DIR;
 import static gitlet.Utils.join;
 
 public class Stage {
-    public static final File Info_DIR = join(GITLET_DIR, "info");
     public static HashSet<File> addStage=new HashSet<>();
     public static HashSet<File> removalStage=new HashSet<>();
 
