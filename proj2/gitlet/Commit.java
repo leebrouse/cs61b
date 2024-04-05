@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.TreeMap;
 
 import static gitlet.Repository.GITLET_DIR;
-import static gitlet.Repository.addstage;
+import static gitlet.Stage.addStage;
 import static gitlet.Utils.*;
 
 
@@ -34,6 +34,7 @@ public class Commit implements Serializable {
     private String message;
     private Date time;
     private String parentID;
+    private HashMap<String,String> fileBlob;
 
     /* TODO: fill in the rest of this class. */
     public Commit(){
@@ -42,10 +43,11 @@ public class Commit implements Serializable {
         this.parentID=null;
     }
 
-    public Commit(String message,String parentID){
+    public Commit(String message,String parentID,HashMap<String,String>fileVersionMap){
         this.message=message;
         this.time= new Date();
         this.parentID=parentID;
+        this.fileBlob=fileVersionMap;
     }
 
 }

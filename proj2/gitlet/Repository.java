@@ -1,12 +1,11 @@
 package gitlet;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.LinkedList;
-
+import java.util.HashMap;
 
 import static gitlet.Blobs.Index_DIR;
 import static gitlet.Commit.Commit_DIR;
+import static gitlet.Stage.*;
 import static gitlet.Utils.*;
 
 // TODO: any imports you need here
@@ -35,11 +34,11 @@ public class Repository {
     public static final File CWD = new File(System.getProperty("user.dir"));
     /** The .gitlet directory. */
     public static final File GITLET_DIR = join(CWD, ".gitlet");
-    public static File addstage=join(GITLET_DIR,"addstage");
-    public static File removalstage=join(GITLET_DIR,"removalstage");
-    public static File HEAD;
-    private static Commit Head;
-    private static LinkedList<String> saveCommit=new LinkedList<>();
+    public static File Branch_DIR=join(GITLET_DIR,"Branch");
+
+    public static File HEAD=join(GITLET_DIR,"HEAD");
+
+
 
     /* TODO: fill in the rest of this class. */
     public static void init(){
@@ -47,22 +46,21 @@ public class Repository {
             System.out.println("A Gitlet version-control system already exists in the current directory.");
         }
 
-        //branch.mkdir();
-
+        Index_DIR.mkdir();
         addstage.mkdir();
         removalstage.mkdir();
-
-        HEAD=join(GITLET_DIR,"HEAD");
         writeContents(HEAD,"*master");
 
         Commit_DIR.mkdir();
-        Index_DIR.mkdir();
+        Branch_DIR.mkdir();
 
-        Commit initCommit = new Commit("Initial commit", null);
+        Commit initCommit = new Commit();
         String commitID = CommitUtils.getCommitID(initCommit);
-        Head=initCommit;
 
+        File master=join(Branch_DIR,"master");
         File initcommitFile=join(Commit_DIR,commitID);
+
+        Utils.writeContents(master,commitID);
         Utils.writeObject(initcommitFile,initCommit);
     }
 
@@ -76,34 +74,43 @@ public class Repository {
 
       Blobs blob=new Blobs();
       File name=join(CWD,fileName);
+      if (!name.exists()){
+        System.out.println("File does not exist.");
+      }
 
       if (blob.makeIndex(fileName)){
           File addfile=join(addstage,fileName);
-          writeObject(addfile,name);
+          String content = Utils.readContentsAsString(name);
+          String hashcode = sha1(content);
+          writeContents(addfile,hashcode);
       }
 
     }
 
     public static void commit(String message) {
         // 读取 addstage，文件放入 commit，清空 addstage;
-        File[] commit= join(Commit_DIR).listFiles();
-        for (File file:commit){
-            if (file==null){
-                break;
-            }
-            String filename=file.getName();
-            saveCommit.addLast(filename);
+        Stage.initaddStage();
+        HashMap<String, String> fileVersionMap=addStage;
+        if (fileVersionMap.isEmpty()){
+            System.out.println("No changes added to the commit.");
+            return;
+        } else if (message==null) {
+            System.out.println("Please enter a commit message.");
+            return;
         }
 
-        String parent = saveCommit.getLast(); // 获取最后一个元素作为父节点
-        Commit newCommit = new Commit(message, parent);
+        String parent = CommitUtils.getParentID(); // 获取最后一个元素作为父节点
+        Commit newCommit = new Commit(message, parent,fileVersionMap);
 
         // 更新 saveCommit 的状态，确保保存新的 commitID
         String commitID = CommitUtils.getCommitID(newCommit);
 
         File commitFile = Utils.join(Commit_DIR, commitID);
         Utils.writeObject(commitFile, newCommit);
-        Head = newCommit;
+
+        File master=join(Branch_DIR,"master");
+        Utils.writeContents(master,commitID);
+        Stage.cleanAddStage();
     }
 
 
