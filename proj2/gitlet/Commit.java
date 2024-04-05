@@ -7,10 +7,11 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.Date; // TODO: You'll likely use this in this class
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.TreeMap;
 
+import static gitlet.Repository.Branch_DIR;
 import static gitlet.Repository.GITLET_DIR;
-import static gitlet.Stage.addStage;
 import static gitlet.Utils.*;
 
 
@@ -35,6 +36,7 @@ public class Commit implements Serializable {
     private Date time;
     private String parentID;
     private HashMap<String,String> fileBlob;
+    private static LinkedList<String> commitList=new LinkedList<>() ;;
 
     /* TODO: fill in the rest of this class. */
     public Commit(){
@@ -50,4 +52,39 @@ public class Commit implements Serializable {
         this.fileBlob=fileVersionMap;
     }
 
-}
+    private static void initCommit(File[] commitFile){
+         for (File file:commitFile){
+             commitList.add(file.getName());
+         }
+    }
+
+    public static void printCommit(){
+        /**java.util.Date and
+        *java.util.Formatter are useful for getting and formatting times*/
+
+        File HeadCommit=join(Branch_DIR,"master");
+        String CommitID=Utils.readContentsAsString(HeadCommit);
+
+        File[] commitFile=join(Commit_DIR).listFiles();
+        if (commitFile != null) {
+            initCommit(commitFile);
+        }
+
+        for (int i=0;i<commitList.size();i++){
+                int index=commitList.indexOf(CommitID);
+                String FileName=commitList.get(index);
+                File indexFile=join(Commit_DIR,FileName);
+                Commit commit=readObject(indexFile,Commit.class);
+                System.out.println("===");
+                System.out.println("commit"+" "+indexFile.getName());
+                System.out.println("Date:"+" "+commit.time);
+                System.out.println(commit.message);
+                System.out.println();
+                CommitID=commit.parentID;
+            }
+        }
+
+
+
+
+    }

@@ -46,6 +46,13 @@ public class Main {
                 }
                 Repository.commit(args[1]);
                 break;
+            case "log":
+                if(args.length != 1){
+                    System.out.println("The commit Usage: log");
+                    return ;
+                }
+                Repository.log();
+                break;
             default:
                 System.out.println("Command is not exist ");
         }

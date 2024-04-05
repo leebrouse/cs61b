@@ -114,8 +114,13 @@ public class Repository {
     }
 
 
-    public static void checkout (String message){
+    public static void checkout (String commitID){
 
+    }
+
+    public static void log(){
+        //读取Head标记的commitID，找到在commit dir的位置，放问commit.parentID，循环反复。
+        Commit.printCommit();
     }
 
 }
