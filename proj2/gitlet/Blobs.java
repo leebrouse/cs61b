@@ -30,7 +30,7 @@ public class Blobs {
                 File blobs = join(Index_DIR, hashcode);
 
                 // 将原文件的内容写入到这个新文件中
-                writeObject(blobs, name);
+                writeContents(blobs, content);
 
                 // 将文件的哈希值加入到saveCode集合中，表示已处理
                 saveCode.put(hashcode,fileName);

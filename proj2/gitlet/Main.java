@@ -46,6 +46,13 @@ public class Main {
                 }
                 Repository.commit(args[1]);
                 break;
+            case "checkout":
+                if(args.length != 3) {
+                    System.out.println("Usage: java gitlet.Main checkout -- [file name]");
+                    return;
+                }
+                Repository.basic_Checkout(args[2]);
+                break;
             case "log":
                 if(args.length != 1){
                     System.out.println("The commit Usage: log");
@@ -53,6 +60,7 @@ public class Main {
                 }
                 Repository.log();
                 break;
+
             default:
                 System.out.println("Command is not exist ");
         }

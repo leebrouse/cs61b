@@ -2,9 +2,11 @@ package gitlet;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 import static gitlet.Blobs.Index_DIR;
 import static gitlet.Commit.Commit_DIR;
+import static gitlet.Commit.commitList;
 import static gitlet.Stage.*;
 import static gitlet.Utils.*;
 
@@ -114,8 +116,22 @@ public class Repository {
     }
 
 
-    public static void checkout (String commitID){
+    public static void basic_Checkout (String fileName){
+        Commit.initCommit();
+        File file = join(CWD, fileName);
 
+        for (int i = 0; i < commitList.size(); i++){
+            String FileName = commitList.get(i);
+            File indexFile = join(Commit_DIR, FileName);
+            Commit commit = readObject(indexFile, Commit.class);
+            String NeedContent = Commit.readFilename(commit, fileName);
+            if (NeedContent != null){
+                Utils.writeContents(file, NeedContent);
+                return; // 在找到内容后直接返回
+            }
+        }
+        // 如果没有找到内容，最后返回 null
+        System.out.println("File not found in any commits.");
     }
 
     public static void log(){

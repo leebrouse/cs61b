@@ -8,8 +8,8 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static gitlet.Repository.Branch_DIR;
-import static gitlet.Repository.GITLET_DIR;
+import static gitlet.Blobs.Index_DIR;
+import static gitlet.Repository.*;
 import static gitlet.Utils.*;
 
 
@@ -34,13 +34,14 @@ public class Commit implements Serializable {
     private Date time;
     private String parentID;
     private HashMap<String,String> fileBlob;
-    private static LinkedList<String> commitList ;
+    public static LinkedList<String> commitList ;
 
     /* TODO: fill in the rest of this class. */
     public Commit(){
         this.message="initial commit";
         this.time= new Date(0);
         this.parentID=null;
+        this.fileBlob=new HashMap<>();
     }
 
     public Commit(String message,String parentID,HashMap<String,String>fileVersionMap){
@@ -50,7 +51,7 @@ public class Commit implements Serializable {
         this.fileBlob=fileVersionMap;
     }
 
-    private static void initCommit(){
+    public static void initCommit(){
         File[] commitFile=join(Commit_DIR).listFiles();
          commitList=new LinkedList<>();
          for (File file:commitFile){
@@ -90,4 +91,19 @@ public class Commit implements Serializable {
             }
         }
 
+    public static String readFilename(Commit commit, String fileName){
+        if (commit.fileBlob.isEmpty()){
+            return null;
+        }else {
+            String blobCode = commit.fileBlob.get(fileName);
+            File[] blobs = join(Index_DIR).listFiles();
+            for (File file : blobs){
+                if (file.getName().equals(blobCode)){
+                    return Utils.readContentsAsString(file);
+                }
+            }
+        }// 如果没有找到文件内容，则返回 null
+        return null;
     }
+
+}
