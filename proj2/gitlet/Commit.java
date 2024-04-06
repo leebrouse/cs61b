@@ -5,10 +5,8 @@ package gitlet;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.Date; // TODO: You'll likely use this in this class
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.TreeMap;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import static gitlet.Repository.Branch_DIR;
 import static gitlet.Repository.GITLET_DIR;
@@ -36,7 +34,7 @@ public class Commit implements Serializable {
     private Date time;
     private String parentID;
     private HashMap<String,String> fileBlob;
-    private static LinkedList<String> commitList=new LinkedList<>() ;;
+    private static LinkedList<String> commitList ;;
 
     /* TODO: fill in the rest of this class. */
     public Commit(){
@@ -53,9 +51,17 @@ public class Commit implements Serializable {
     }
 
     private static void initCommit(File[] commitFile){
+         commitList=new LinkedList<>();
          for (File file:commitFile){
              commitList.add(file.getName());
          }
+    }
+
+    private static String DateFormat(Date date){
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy Z", Locale.US);
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT-8"));
+        String time= sdf.format(date);
+        return time;
     }
 
     public static void printCommit(){
@@ -77,9 +83,12 @@ public class Commit implements Serializable {
                 Commit commit=readObject(indexFile,Commit.class);
                 System.out.println("===");
                 System.out.println("commit"+" "+indexFile.getName());
-                System.out.println("Date:"+" "+commit.time);
+                String FormatDate= DateFormat(commit.time);
+                System.out.println("Date:"+" "+FormatDate);
                 System.out.println(commit.message);
-                System.out.println();
+                if (i!=commitList.size()-1){
+                    System.out.println();
+                }
                 CommitID=commit.parentID;
             }
         }
