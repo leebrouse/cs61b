@@ -85,10 +85,7 @@ public class Commit implements Serializable {
                 String FormatDate= DateFormat(commit.time);
                 System.out.println("Date: "+FormatDate);
 
-                System.out.println(commit.message);
-                if (i!=commitList.size()-1){
-                    System.out.println();
-                }
+                System.out.println(commit.message+"\n");
                 CommitID=commit.parentID;
             }
         }
