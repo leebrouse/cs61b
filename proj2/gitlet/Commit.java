@@ -38,7 +38,7 @@ public class Commit implements Serializable {
 
     /* TODO: fill in the rest of this class. */
     public Commit(){
-        this.message="Initial commit ";
+        this.message="initial commit";
         this.time= new Date(0);
         this.parentID=null;
     }
