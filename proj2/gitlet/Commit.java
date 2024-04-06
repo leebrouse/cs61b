@@ -34,7 +34,7 @@ public class Commit implements Serializable {
     private Date time;
     private String parentID;
     private HashMap<String,String> fileBlob;
-    private static LinkedList<String> commitList ;;
+    private static LinkedList<String> commitList ;
 
     /* TODO: fill in the rest of this class. */
     public Commit(){
@@ -50,7 +50,8 @@ public class Commit implements Serializable {
         this.fileBlob=fileVersionMap;
     }
 
-    private static void initCommit(File[] commitFile){
+    private static void initCommit(){
+        File[] commitFile=join(Commit_DIR).listFiles();
          commitList=new LinkedList<>();
          for (File file:commitFile){
              commitList.add(file.getName());
@@ -67,24 +68,23 @@ public class Commit implements Serializable {
     public static void printCommit(){
         /**java.util.Date and
         *java.util.Formatter are useful for getting and formatting times*/
+        initCommit();
 
         File HeadCommit=join(Branch_DIR,"master");
         String CommitID=Utils.readContentsAsString(HeadCommit);
-
-        File[] commitFile=join(Commit_DIR).listFiles();
-        if (commitFile != null) {
-            initCommit(commitFile);
-        }
 
         for (int i=0;i<commitList.size();i++){
                 int index=commitList.indexOf(CommitID);
                 String FileName=commitList.get(index);
                 File indexFile=join(Commit_DIR,FileName);
                 Commit commit=readObject(indexFile,Commit.class);
+
                 System.out.println("===");
-                System.out.println("commit"+" "+indexFile.getName());
+                System.out.println("commit "+indexFile.getName());
+
                 String FormatDate= DateFormat(commit.time);
-                System.out.println("Date:"+" "+FormatDate);
+                System.out.println("Date: "+FormatDate);
+
                 System.out.println(commit.message);
                 if (i!=commitList.size()-1){
                     System.out.println();
@@ -92,8 +92,5 @@ public class Commit implements Serializable {
                 CommitID=commit.parentID;
             }
         }
-
-
-
 
     }
