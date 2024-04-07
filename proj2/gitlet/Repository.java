@@ -2,11 +2,9 @@ package gitlet;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.LinkedList;
 
-import static gitlet.Blobs.Index_DIR;
-import static gitlet.Commit.Commit_DIR;
-import static gitlet.Commit.commitList;
+import static gitlet.Blobs.*;
+import static gitlet.Commit.*;
 import static gitlet.Stage.*;
 import static gitlet.Utils.*;
 
@@ -164,7 +162,37 @@ public class Repository {
     public static void log(){
         //读取Head标记的commitID，找到在commit dir的位置，放问commit.parentID，循环反复。
         Commit.printCommit();
-
     }
+
+    public static void status(){
+        /**
+         *
+         *
+         * === Staged Files ===
+         * wug.txt
+         * wug2.txt
+         *
+         * === Removed Files ===
+         * goodbye.txt
+         *
+         * === Modifications Not Staged For Commit ===
+         * junk.txt (deleted)
+         * wug3.txt (modified)
+         *
+         * === Untracked Files ===
+         * random.stuff
+         */
+        File initDir=join(CWD,".gitlet");
+        if (!initDir.mkdir()) {
+            Status.Branch();
+            Status.StageFile();
+            Status.RemovedFile();
+            Status.Modifications();
+            Status.UntrackedFiles();
+        }else {
+            System.out.println("Please init the gitLet first!!!");
+        }
+    }
+
 
 }

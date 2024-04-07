@@ -68,7 +68,13 @@ public class Main {
                 }
                 Repository.log();
                 break;
-
+            case "status":
+                if (args.length!=1){
+                    System.out.println("Usage: java gitlet.Main status");
+                    return;
+                }
+                Repository.status();
+                break;
             default:
                 System.out.println("Command is not exist ");
         }
