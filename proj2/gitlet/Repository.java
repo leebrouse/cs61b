@@ -94,7 +94,7 @@ public class Repository {
         if (fileVersionMap.isEmpty()){
             System.out.println("No changes added to the commit.");
             return;
-        } else if (message==null) {
+        } else if (message.equals(" ")) {
             System.out.println("Please enter a commit message.");
             return;
         }
