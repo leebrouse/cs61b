@@ -134,9 +134,37 @@ public class Repository {
         System.out.println("File not found in any commits.");
     }
 
+    public  static void prev_Checkout(String commitID,String fileName){
+        /**1.找到所要的commitID的位置
+         * 2.读其hashmap的指定文件数据
+         * 3.写回cwd中的同名文件
+         */
+        //读commit的文件（初始化）
+        Commit.initCommit();
+        //cwd中的同名文件
+        File file = join(CWD, fileName);
+
+        for (int i = 0; i < commitList.size(); i++){
+            if (!commitList.contains(commitID)){
+                System.out.println("No commit with that id exists");
+                return;
+            }
+            int indexLocate=commitList.indexOf(commitID);
+            String commitName=commitList.get(indexLocate);
+            File indexFile=join(Commit_DIR,commitName);
+            Commit commit = readObject(indexFile, Commit.class);
+            String NeedContent = Commit.readFilename(commit, fileName);
+            if (NeedContent != null){
+                Utils.writeContents(file, NeedContent);
+                return; // 在找到内容后直接返回
+            }
+        }
+    }
+
     public static void log(){
         //读取Head标记的commitID，找到在commit dir的位置，放问commit.parentID，循环反复。
         Commit.printCommit();
+
     }
 
 }

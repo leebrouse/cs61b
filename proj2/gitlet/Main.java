@@ -47,11 +47,19 @@ public class Main {
                 Repository.commit(args[1]);
                 break;
             case "checkout":
-                if(args.length != 3) {
-                    System.out.println("Usage: java gitlet.Main checkout -- [file name]");
+                if(args.length != 2&&args.length != 3&&args.length!=4) {
+                    System.out.println("1.Usage: java gitlet.Main checkout -- [file name]");
+                    System.out.println("2.Usage: java gitlet.Main checkout [commit id] -- [file name]");
+                    System.out.println("3.Usage: java gitlet.Main checkout [branch name]");
                     return;
                 }
-                Repository.basic_Checkout(args[2]);
+                if (args.length == 2){
+                  //Checkout Branch  Method
+                } else if (args.length == 3) {
+                    Repository.basic_Checkout(args[2]);
+                }else {
+                    Repository.prev_Checkout(args[1],args[3]);
+                }
                 break;
             case "log":
                 if(args.length != 1){

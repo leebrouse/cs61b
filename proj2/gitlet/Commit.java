@@ -92,6 +92,7 @@ public class Commit implements Serializable {
         }
 
     public static String readFilename(Commit commit, String fileName){
+        //for basic_checkout
         if (commit.fileBlob.isEmpty()){
             return null;
         }else {
