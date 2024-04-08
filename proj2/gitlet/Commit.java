@@ -59,6 +59,22 @@ public class Commit implements Serializable {
          }
     }
 
+    public static boolean judgeCommit(String fileName){
+        File HEAD=join(GITLET_DIR,"HEAD");
+        String currentBranch=readContentsAsString(HEAD);
+
+        File headCommit=join(Branch_DIR,currentBranch);
+        String headCommitContent=readContentsAsString(headCommit);
+        int index=Commit.commitList.indexOf(headCommitContent);
+        String CommitID=Commit.commitList.get(index);
+        File indexCommit=join(Commit_DIR,CommitID);
+        Commit commit=readObject(indexCommit,Commit.class);
+        if (commit.fileBlob.containsKey(fileName)){
+            return true;
+        }
+            return false;
+    }
+
     private static String DateFormat(Date date){
         SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy Z", Locale.US);
         sdf.setTimeZone(TimeZone.getTimeZone("GMT-8"));

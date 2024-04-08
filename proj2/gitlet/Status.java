@@ -51,10 +51,6 @@ public class Status {
 
         File[] UntrackedFiles=join(CWD).listFiles();
         System.out.println("=== Untracked Files ===");
-//        for (File file:UntrackedFiles){
-//            //需要判断是否文件在stage（tracked or not?）在,则跳过：即continue;
-//            System.out.println(file.getName());
-//        }
         System.out.println();
     }
 }

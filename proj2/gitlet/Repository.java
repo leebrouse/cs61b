@@ -49,7 +49,7 @@ public class Repository {
         Index_DIR.mkdir();
         addstage.mkdir();
         removalstage.mkdir();
-        writeContents(HEAD,"*master");
+        writeContents(HEAD,"master");
 
         Commit_DIR.mkdir();
         Branch_DIR.mkdir();
@@ -71,7 +71,7 @@ public class Repository {
             3.当commit时清空addstage区
             4.stage区有两个区add和remove
         **/
-
+      //如果cwd中的文件有与commit区中的相同则不能被add，test18-nop-add
       Blobs blob=new Blobs();
       File name=join(CWD,fileName);
       if (!name.exists()){
@@ -94,7 +94,7 @@ public class Repository {
         if (fileVersionMap.isEmpty()){
             System.out.println("No changes added to the commit.");
             return;
-        } else if (message.equals(" ")) {
+        } else if (message.isEmpty()) {
             System.out.println("Please enter a commit message.");
             return;
         }
@@ -113,6 +113,24 @@ public class Repository {
         Stage.cleanAddStage();
     }
 
+    public static void rm(String fileName){
+        //Have bug in this method
+        Stage.initaddStage();
+        Commit.initCommit();
+        File removeFile=join(CWD,fileName);
+        if (addStage.containsKey(fileName)){
+            File file=join(addstage,fileName);
+            file.delete();
+        }else if (Commit.judgeCommit(fileName)){
+            File rmStageFile=join(removalstage,fileName);
+            String rmContent=readContentsAsString(removeFile);
+            writeContents(rmStageFile,rmContent);
+            removeFile.delete();
+        }else {
+            System.out.println("No reason to remove the file.");
+        }
+
+    }
 
     public static void basic_Checkout (String fileName){
         Commit.initCommit();

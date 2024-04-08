@@ -1,8 +1,5 @@
 package gitlet;
 
-import java.io.File;
-import java.util.LinkedList;
-
 /** Driver class for Gitlet, a subset of the Git version-control system.
  *  @author Leebrouse
  */
@@ -41,10 +38,17 @@ public class Main {
             // TODO: FILL THE REST IN
             case "commit":
                 if(args.length != 2){
-                    System.out.println("The commit Usage: commit  [message]");
+                    System.out.println("Please enter a commit message.");
                     return ;
                 }
                 Repository.commit(args[1]);
+                break;
+            case "rm":
+                if (args.length!=2){
+                    System.out.println("Usage:java gitlet.Main rm [file name]");
+                    return;
+                }
+                Repository.rm(args[1]);
                 break;
             case "checkout":
                 if(args.length != 2&&args.length != 3&&args.length!=4) {
