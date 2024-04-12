@@ -108,8 +108,11 @@ public class Repository {
         File commitFile = Utils.join(Commit_DIR, commitID);
         Utils.writeObject(commitFile, newCommit);
 
-        File master=join(Branch_DIR,"master");
-        Utils.writeContents(master,commitID);
+        //读取HEAD的当前分支
+        File HEAD=join(GITLET_DIR,"HEAD");
+        String currentBranch=Utils.readContentsAsString(HEAD);
+        File HeadCommit=join(Branch_DIR,currentBranch);
+        Utils.writeContents(HeadCommit,commitID);
         Stage.cleanAddStage();
     }
 
@@ -177,6 +180,37 @@ public class Repository {
         }
     }
 
+    public static void CheckBranch(String branch){
+
+        File Head=join(GITLET_DIR,"HEAD");
+        writeContents(Head,branch);
+
+        String Branch=Utils.readContentsAsString(HEAD);
+        File currentBranch=join(Branch_DIR,Branch);
+        String currentCommitID=Utils.readContentsAsString(currentBranch);
+        Commit.initCommit();
+
+            if (!commitList.contains(currentCommitID)){
+                System.out.println("No commit with that id exists");
+                return;
+            }
+            int indexLocate=commitList.indexOf(currentCommitID);
+            String commitName=commitList.get(indexLocate);
+            File indexFile=join(Commit_DIR,commitName);
+            Commit commit = readObject(indexFile, Commit.class);
+            Commit.readBranch(commit);
+
+    }
+
+    public static void branch(String Branch){
+        File otherBranch=join(Branch_DIR,Branch);
+        File currentBranch=join(Branch_DIR,"master");
+        String currentCommitID=Utils.readContentsAsString(currentBranch);
+        writeContents(otherBranch,currentCommitID);
+
+
+    }
+
     public static void log(){
         //读取Head标记的commitID，找到在commit dir的位置，放问commit.parentID，循环反复。
         Commit.printCommit();
@@ -210,6 +244,11 @@ public class Repository {
         }else {
             System.out.println("Please init the gitLet first!!!");
         }
+    }
+
+    public static void global_log(){
+        File dir=join(Commit_DIR);
+        System.out.println(Utils.plainFilenamesIn(dir));
     }
 
 

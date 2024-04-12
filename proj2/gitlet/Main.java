@@ -58,12 +58,18 @@ public class Main {
                     return;
                 }
                 if (args.length == 2){
-                  //Checkout Branch  Method
+                  Repository.CheckBranch(args[1]);
                 } else if (args.length == 3) {
                     Repository.basic_Checkout(args[2]);
                 }else {
                     Repository.prev_Checkout(args[1],args[3]);
                 }
+                break;
+            case "branch":
+                if(args.length != 2){
+                    System.out.println("Usage:java gitlet.Main branch [branch name]");
+                }
+                Repository.branch(args[1]);
                 break;
             case "log":
                 if(args.length != 1){
@@ -71,6 +77,13 @@ public class Main {
                     return ;
                 }
                 Repository.log();
+                break;
+            case "global-log":
+                if (args.length != 1){
+                    System.out.println("Usage: global-log");
+                    return ;
+                }
+                Repository.global_log();
                 break;
             case "status":
                 if (args.length!=1){

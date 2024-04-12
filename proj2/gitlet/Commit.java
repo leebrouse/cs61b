@@ -86,8 +86,9 @@ public class Commit implements Serializable {
         /**java.util.Date and
         *java.util.Formatter are useful for getting and formatting times*/
         initCommit();
-
-        File HeadCommit=join(Branch_DIR,"master");
+        File HEAD=join(GITLET_DIR,"HEAD");
+        String currentBranch=Utils.readContentsAsString(HEAD);
+        File HeadCommit=join(Branch_DIR,currentBranch);
         String CommitID=Utils.readContentsAsString(HeadCommit);
 
         for (int i=0;i<commitList.size();i++){
@@ -121,6 +122,41 @@ public class Commit implements Serializable {
             }
         }// 如果没有找到文件内容，则返回 null
         return null;
+    }
+
+    public static void readBranch(Commit commit){
+        if (commit.fileBlob.isEmpty()){
+            //如何让cwd区初始化；
+            File[] cwdFile=join(CWD).listFiles();
+            for (File file:cwdFile){
+                Utils.restrictedDelete(file);
+            }
+        }else{
+
+            File[] cwdFile=join(CWD).listFiles();
+            for (File file:cwdFile){
+                if (!commit.fileBlob.containsKey(file.getName())){
+                    Utils.restrictedDelete(file);
+                }
+            }
+
+            Set<String> keys = commit.fileBlob.keySet();
+            for (String key : keys) {
+                String currentKey=key;
+                String blobCode=commit.fileBlob.get(currentKey);
+
+                File[] blobs = join(Index_DIR).listFiles();
+                for (File file : blobs){
+                    if (file.getName().equals(blobCode)){
+                        File File=join(CWD,currentKey);
+                        String content=readContentsAsString(file);
+                        writeContents(File,content);
+                        break;
+                    }
+                }
+            }
+
+        }
     }
 
 }
