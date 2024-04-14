@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import static gitlet.Repository.GITLET_DIR;
+import static gitlet.Repository.rm;
 import static gitlet.Utils.*;
 
 public class Stage {
@@ -27,6 +28,23 @@ public class Stage {
             file.delete();
         }
         addStage.clear();
+    }
+
+    public static void initrmStage(){
+        File[] stagefile=join(removalstage).listFiles();
+        for (File file:stagefile){
+            String fileName= file.getName();
+            String blob=Utils.readContentsAsString(file);
+            removalStage.put(fileName,blob);
+        }
+    }
+
+    public static void cleanRmStage(){
+        File[] stagefile=join(removalstage).listFiles();
+        for (File rmfile:stagefile){
+            rmfile.delete();
+        }
+        removalStage.clear();
     }
 
 }

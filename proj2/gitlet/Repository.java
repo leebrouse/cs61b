@@ -91,12 +91,32 @@ public class Repository {
     public static void commit(String message) {
         // 读取 addstage，文件放入 commit，清空 addstage;
         Stage.initaddStage();
+        Stage.initrmStage();
         HashMap<String, String> fileVersionMap=addStage;
-        if (fileVersionMap.isEmpty()){
+        HashMap<String,String> rmStage=removalStage;
+
+        if (fileVersionMap.isEmpty()&&rmStage.isEmpty()){
             System.out.println("No changes added to the commit.");
             return;
         } else if (message.isEmpty()) {
             System.out.println("Please enter a commit message.");
+            return;
+        }if (!rmStage.isEmpty()){
+            String parent = CommitUtils.getParentID(); // 获取最后一个元素作为父节点
+            Commit newCommit = new Commit(message, parent,fileVersionMap);
+
+            // 更新 saveCommit 的状态，确保保存新的 commitID
+            String commitID = CommitUtils.getCommitID(newCommit);
+
+            File commitFile = Utils.join(Commit_DIR, commitID);
+            Utils.writeObject(commitFile, newCommit);
+
+            //读取HEAD的当前分支
+            File HEAD=join(GITLET_DIR,"HEAD");
+            String currentBranch=Utils.readContentsAsString(HEAD);
+            File HeadCommit=join(Branch_DIR,currentBranch);
+            Utils.writeContents(HeadCommit,commitID);
+            Stage.cleanRmStage();
             return;
         }
 
@@ -122,7 +142,11 @@ public class Repository {
         Stage.initaddStage();
         Commit.initCommit();
         File removeFile=join(CWD,fileName);
-        if (addStage.containsKey(fileName)){
+        if (!removeFile.exists()){
+            //Have bug
+            File rmStageFile=join(removalstage,fileName);
+            writeContents(rmStageFile);
+        }else if (addStage.containsKey(fileName)){
             File file=join(addstage,fileName);
             file.delete();
         }else if (Commit.judgeCommit(fileName)){
@@ -205,7 +229,7 @@ public class Repository {
 
     public static void branch(String Branch){
         File otherBranch=join(Branch_DIR,Branch);
-        if (!otherBranch.exists()){
+        if (otherBranch.exists()){
             System.out.println("A branch with that name already exists.");
         }else {
             File currentBranch = join(Branch_DIR, "master");
