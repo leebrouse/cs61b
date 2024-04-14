@@ -72,18 +72,19 @@ public class Repository {
             4.stage区有两个区add和remove
         **/
       //如果cwd中的文件有与commit区中的相同则不能被add，test18-nop-add
-      Blobs blob=new Blobs();
-      File name=join(CWD,fileName);
-      if (!name.exists()){
-        System.out.println("File does not exist.");
-      }
+        File name=join(CWD,fileName);
+        if (!name.exists()){
+            System.out.println("File does not exist.");
+            return;
+        }
 
-      if (blob.makeIndex(fileName)){
-          File addfile=join(addstage,fileName);
-          String content = Utils.readContentsAsString(name);
-          String hashcode = sha1(content);
-          writeContents(addfile,hashcode);
-      }
+        Blobs blob=new Blobs();
+        if (blob.makeIndex(fileName)){
+            File addfile=join(addstage,fileName);
+            String content = Utils.readContentsAsString(name);
+            String hashcode = sha1(content);
+            writeContents(addfile,hashcode);
+        }
 
     }
 
@@ -182,6 +183,7 @@ public class Repository {
 
     public static void CheckBranch(String branch){
 
+        //Has bug;
         File Head=join(GITLET_DIR,"HEAD");
         writeContents(Head,branch);
 
@@ -199,16 +201,17 @@ public class Repository {
             File indexFile=join(Commit_DIR,commitName);
             Commit commit = readObject(indexFile, Commit.class);
             Commit.readBranch(commit);
-
     }
 
     public static void branch(String Branch){
         File otherBranch=join(Branch_DIR,Branch);
-        File currentBranch=join(Branch_DIR,"master");
-        String currentCommitID=Utils.readContentsAsString(currentBranch);
-        writeContents(otherBranch,currentCommitID);
-
-
+        if (!otherBranch.exists()){
+            System.out.println("A branch with that name already exists.");
+        }else {
+            File currentBranch = join(Branch_DIR, "master");
+            String currentCommitID = Utils.readContentsAsString(currentBranch);
+            writeContents(otherBranch, currentCommitID);
+        }
     }
 
     public static void log(){
@@ -216,24 +219,16 @@ public class Repository {
         Commit.printCommit();
     }
 
+    public static void global_log(){
+        File dir=join(Commit_DIR);
+        System.out.println(Utils.plainFilenamesIn(dir));
+    }
+
+    public static void find(String commit){
+
+    }
+
     public static void status(){
-        /**
-         *
-         *
-         * === Staged Files ===
-         * wug.txt
-         * wug2.txt
-         *
-         * === Removed Files ===
-         * goodbye.txt
-         *
-         * === Modifications Not Staged For Commit ===
-         * junk.txt (deleted)
-         * wug3.txt (modified)
-         *
-         * === Untracked Files ===
-         * random.stuff
-         */
         File initDir=join(CWD,".gitlet");
         if (!initDir.mkdir()) {
             Status.Branch();
@@ -242,14 +237,11 @@ public class Repository {
             Status.Modifications();
             Status.UntrackedFiles();
         }else {
-            System.out.println("Please init the gitLet first!!!");
+            System.out.println("Not in an initialized Gitlet directory.");
         }
     }
 
-    public static void global_log(){
-        File dir=join(Commit_DIR);
-        System.out.println(Utils.plainFilenamesIn(dir));
-    }
+
 
 
 }

@@ -12,7 +12,7 @@ public class Main {
 
         // TODO: what if args is empty?
         if(args.length==0){
-            System.out.println("The args is empty");
+            System.out.println("Please enter a command.");
             return ;
         }
 
@@ -85,6 +85,12 @@ public class Main {
                 }
                 Repository.global_log();
                 break;
+            case "find":
+                if (args.length != 2){
+                    System.out.println("Usage: find [commit message]");
+                    return ;
+                }
+                Repository.find(args[1]);
             case "status":
                 if (args.length!=1){
                     System.out.println("Usage: java gitlet.Main status");
@@ -93,7 +99,7 @@ public class Main {
                 Repository.status();
                 break;
             default:
-                System.out.println("Command is not exist ");
+                System.out.println("No command with that name exists.");
         }
     }
 }

@@ -1,4 +1,6 @@
 # Basic initialization
 > init
 <<<
-E .gitlet
+> glorp foo
+No command with that name exists.
+<<<
