@@ -82,6 +82,22 @@ public class Commit implements Serializable {
         return time;
     }
 
+    /**Just for global_log*/
+    public static void globalPrint(String commitID){
+        File indexFile=join(Commit_DIR,commitID);
+        Commit commit=readObject(indexFile,Commit.class);
+
+        System.out.println("===");
+        System.out.println("commit "+indexFile.getName());
+
+        String FormatDate= DateFormat(commit.time);
+        System.out.println("Date: "+FormatDate);
+
+        System.out.println(commit.message+"\n");
+    }
+
+    /** Just for basic_log
+     * "Rubbish Method!!!!"*/
     public static void printCommit(){
         /**java.util.Date and
         *java.util.Formatter are useful for getting and formatting times*/
@@ -124,6 +140,7 @@ public class Commit implements Serializable {
         return null;
     }
 
+    //Shit!!!!
     public static void readBranch(Commit commit){
         if (commit.fileBlob.isEmpty()){
             //如何让cwd区初始化；
@@ -158,5 +175,30 @@ public class Commit implements Serializable {
 
         }
     }
+
+    /** To help find method search the message that the users require*/
+    public static void findHelper(String message){
+            List<String> commitList = Utils.plainFilenamesIn(Commit_DIR);
+            if (commitList == null || commitList.isEmpty()) {
+                System.out.println("Found no commit with that message.");
+                return;
+            }
+
+            boolean found = false;  // 标记是否找到匹配的提交信息
+
+            for (String commitId : commitList) {
+                File commitFile = join(Commit_DIR, commitId);
+                Commit commitObject = readObject(commitFile, Commit.class);
+                if (commitObject.message.equals(message)) {
+                    System.out.println(commitFile.getName());
+                    found = true;  // 找到至少一个匹配的提交，将标记设置为true
+                }
+            }
+
+            if (!found) {
+                // 如果没有找到任何匹配的提交信息
+                System.out.println("Found no commit with that message.");
+            }
+        }
 
 }

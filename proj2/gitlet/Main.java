@@ -91,6 +91,7 @@ public class Main {
                     return ;
                 }
                 Repository.find(args[1]);
+                break;
             case "status":
                 if (args.length!=1){
                     System.out.println("Usage: java gitlet.Main status");

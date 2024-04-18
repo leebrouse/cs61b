@@ -2,6 +2,7 @@ package gitlet;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 
 import static gitlet.Blobs.*;
 import static gitlet.Commit.*;
@@ -243,13 +244,19 @@ public class Repository {
         Commit.printCommit();
     }
 
+
     public static void global_log(){
-        File dir=join(Commit_DIR);
-        System.out.println(Utils.plainFilenamesIn(dir));
+        List<String>commitList=Utils.plainFilenamesIn(Commit_DIR);
+        if (commitList == null || commitList.isEmpty()) {
+            return;
+        }
+        for (String commitId : commitList) {
+            Commit.globalPrint(commitId);
+        }
     }
 
-    public static void find(String commit){
-
+    public static void find(String message){
+       Commit.findHelper(message);
     }
 
     public static void status(){
