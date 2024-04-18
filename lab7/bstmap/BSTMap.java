@@ -10,22 +10,6 @@ public class BSTMap<K extends  Comparable<K>, V>  implements Map61B<K , V>{
         private BSTNode leftNode;
         private BSTNode rightNode ;
 
-        private BSTNode get(K k) {
-            if (k != null && k.equals(key)){
-                return this;
-            }
-
-            if (leftNode==null||rightNode==null){
-                return null;
-            }
-
-            if (k.compareTo(key)<0){
-                return leftNode.get(k);
-            }else {
-                return rightNode.get(k);
-            }
-        }
-
         private BSTNode(K key, V value,BSTNode leftNode,BSTNode rightNode){
             this.key=key;
             this.value=value;
@@ -117,10 +101,6 @@ public class BSTMap<K extends  Comparable<K>, V>  implements Map61B<K , V>{
         root = putHelper(key, value, root);
     }
 
-    public void printInOrder() {
-        printInOrderHelper(root);
-    }
-
     private void printInOrderHelper(BSTNode node) {
         if (node == null) {
             return;
@@ -129,6 +109,10 @@ public class BSTMap<K extends  Comparable<K>, V>  implements Map61B<K , V>{
         printInOrderHelper(node.leftNode); // 递归遍历左子树
         System.out.println(node.key + ": " + node.value); // 打印当前节点
         printInOrderHelper(node.rightNode); // 递归遍历右子树
+    }
+
+    public void printInOrder() {
+        printInOrderHelper(root);
     }
 
     @Override
