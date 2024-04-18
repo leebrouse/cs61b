@@ -16,7 +16,6 @@ public class Status {
             String branchID=Branch.getName();
             if (Branch.getName().equals(currentBranch)){
                 System.out.println("*"+branchID);
-                return;
             }else {
                 System.out.println(branchID);
             }
