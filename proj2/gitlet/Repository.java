@@ -207,6 +207,12 @@ public class Repository {
     }
 
     public static void CheckBranch(String branch){
+        //Judge the branch is existed or not
+       File Branches=join(Branch_DIR,branch);
+       if (!Branches.exists()){
+           System.out.println("No such branch exists.");
+           return;
+       }
 
         //Has bug;
         File Head=join(GITLET_DIR,"HEAD");
@@ -238,6 +244,21 @@ public class Repository {
             writeContents(otherBranch, currentCommitID);
         }
     }
+
+    public static void rm_branch(String rmBranch){
+        File rm_Branch=join(Branch_DIR,rmBranch);
+        String currentBranch=Utils.readContentsAsString(HEAD);
+
+        if (rmBranch.equals(currentBranch)){
+            System.out.println("Cannot remove the current branch.");
+        } else if (!rm_Branch.exists()) {
+            System.out.println("A branch with that name does not exist.");
+        }else {
+            rm_Branch.delete();
+        }
+
+    }
+
 
     public static void log(){
         //读取Head标记的commitID，找到在commit dir的位置，放问commit.parentID，循环反复。

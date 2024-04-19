@@ -71,6 +71,12 @@ public class Main {
                 }
                 Repository.branch(args[1]);
                 break;
+            case "rm-branch":
+                if(args.length != 2){
+                    System.out.println("Usage:java gitlet.Main rm-branch [branch name]");
+                }
+                Repository.rm_branch(args[1]);
+                break;
             case "log":
                 if(args.length != 1){
                     System.out.println("The commit Usage: log");
