@@ -73,9 +73,14 @@ public class Repository {
             4.stage区有两个区add和remove
         **/
       //如果cwd中的文件有与commit区中的相同则不能被add，test18-nop-add
+        initCommit();
         File name=join(CWD,fileName);
         if (!name.exists()){
             System.out.println("File does not exist.");
+            return;
+        }
+
+        if (addJudge(fileName)){
             return;
         }
 
@@ -140,11 +145,13 @@ public class Repository {
 
     public static void rm(String fileName){
         //Have bug in this method
+
         Stage.initaddStage();
         Commit.initCommit();
         File removeFile=join(CWD,fileName);
         if (!removeFile.exists()){
             //Have bug
+
             File rmStageFile=join(removalstage,fileName);
             writeContents(rmStageFile);
         }else if (addStage.containsKey(fileName)){
@@ -191,7 +198,7 @@ public class Repository {
 
         for (int i = 0; i < commitList.size(); i++){
             if (!commitList.contains(commitID)){
-                System.out.println("No commit with that id exists");
+                System.out.println("No commit with that id exists.");
                 return;
             }
             int indexLocate=commitList.indexOf(commitID);
@@ -204,6 +211,7 @@ public class Repository {
                 return; // 在找到内容后直接返回
             }
         }
+        System.out.println("File does not exist in that commit.");
     }
 
     public static void CheckBranch(String branch){
@@ -214,11 +222,16 @@ public class Repository {
            return;
        }
 
+        if (Utils.readContentsAsString(HEAD).equals(branch)){
+            System.out.println("No need to checkout the current branch.");
+            return;
+        }
+
         //Has bug;
         File Head=join(GITLET_DIR,"HEAD");
         writeContents(Head,branch);
-
         String Branch=Utils.readContentsAsString(HEAD);
+
         File currentBranch=join(Branch_DIR,Branch);
         String currentCommitID=Utils.readContentsAsString(currentBranch);
         Commit.initCommit();

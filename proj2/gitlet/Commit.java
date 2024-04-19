@@ -10,6 +10,7 @@ import java.util.*;
 
 import static gitlet.Blobs.Index_DIR;
 import static gitlet.Repository.*;
+import static gitlet.Stage.addstage;
 import static gitlet.Utils.*;
 
 
@@ -201,4 +202,19 @@ public class Commit implements Serializable {
             }
         }
 
+        public static boolean addJudge(String fileName){
+            String Branch=Utils.readContentsAsString(HEAD);
+            File currentBranch=join(Branch_DIR,Branch);
+            String currentCommitID=Utils.readContentsAsString(currentBranch);
+
+            File commit=join(Commit_DIR,currentCommitID);
+            Commit currentCommit=readObject(commit,Commit.class);
+
+            String commitCode=currentCommit.fileBlob.get(fileName);
+            File name=join(CWD,fileName);
+            String content = Utils.readContentsAsString(name);
+            String cwdCode = sha1(content);
+
+            return currentCommit.fileBlob.containsKey(fileName) && cwdCode.equals(commitCode);
+        }
 }

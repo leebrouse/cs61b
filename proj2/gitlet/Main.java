@@ -62,6 +62,9 @@ public class Main {
                 } else if (args.length == 3) {
                     Repository.basic_Checkout(args[2]);
                 }else {
+                    if (!args[2].equals("--")){
+                        System.out.println("Incorrect operands.");
+                    }
                     Repository.prev_Checkout(args[1],args[3]);
                 }
                 break;
