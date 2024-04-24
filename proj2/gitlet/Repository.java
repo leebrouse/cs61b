@@ -74,10 +74,16 @@ public class Repository {
         **/
       //如果cwd中的文件有与commit区中的相同则不能被add，test18-nop-add
         initCommit();
+        initrmStage();
         File name=join(CWD,fileName);
         if (!name.exists()){
             System.out.println("File does not exist.");
             return;
+        }
+
+        if (removalStage.containsKey(fileName)){
+            File rmstageFile=join(removalstage,fileName);
+            rmstageFile.delete();
         }
 
         if (addJudge(fileName)){
@@ -90,7 +96,10 @@ public class Repository {
             String content = Utils.readContentsAsString(name);
             String hashcode = sha1(content);
             writeContents(addfile,hashcode);
+
         }
+
+
 
     }
 
