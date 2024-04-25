@@ -96,10 +96,7 @@ public class Repository {
             String content = Utils.readContentsAsString(name);
             String hashcode = sha1(content);
             writeContents(addfile,hashcode);
-
         }
-
-
 
     }
 
