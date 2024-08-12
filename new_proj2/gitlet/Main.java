@@ -42,6 +42,73 @@ public class Main {
                 }
                 Repository.commit(args[1]);
                 break;
+            case "rm":
+                if (args.length!=2){
+                    System.out.println("Usage:java gitlet.Main rm [file name]");
+                    return;
+                }
+                //Repository.rm(args[1]);
+                break;
+            case "checkout":
+                if(args.length != 2&&args.length != 3&&args.length!=4) {
+                    System.out.println("1.Usage: java gitlet.Main checkout -- [file name]");
+                    System.out.println("2.Usage: java gitlet.Main checkout [commit id] -- [file name]");
+                    System.out.println("3.Usage: java gitlet.Main checkout [branch name]");
+                    return;
+                }
+                if (args.length == 2){
+                    //Repository.CheckBranch(args[1]);
+                } else if (args.length == 3) {
+                    Repository.basic_Checkout(args[2]);
+                }else {
+                    if (!args[2].equals("--")){
+                        System.out.println("Incorrect operands.");
+                    }
+                    Repository.prev_Checkout(args[1],args[3]);
+                }
+                break;
+            case "branch":
+                if(args.length != 2){
+                    System.out.println("Usage:java gitlet.Main branch [branch name]");
+                }
+                //Repository.branch(args[1]);
+                break;
+            case "rm-branch":
+                if(args.length != 2){
+                    System.out.println("Usage:java gitlet.Main rm-branch [branch name]");
+                }
+                //Repository.rm_branch(args[1]);
+                break;
+            case "log":
+                if(args.length != 1){
+                    System.out.println("The commit Usage: log");
+                    return ;
+                }
+                Repository.log();
+                break;
+            case "global-log":
+                if (args.length != 1){
+                    System.out.println("Usage: global-log");
+                    return ;
+                }
+                //Repository.global_log();
+                break;
+            case "find":
+                if (args.length != 2){
+                    System.out.println("Usage: find [commit message]");
+                    return ;
+                }
+                //Repository.find(args[1]);
+                break;
+            case "status":
+                if (args.length!=1){
+                    System.out.println("Usage: java gitlet.Main status");
+                    return;
+                }
+                //Repository.status();
+                break;
+            default:
+                System.out.println("No command with that name exists.");
 
         }
     }

@@ -37,7 +37,7 @@ public class Commit implements Serializable {
     }
 
     public Commit(String message, String parentID,HashMap<String,String> fileBlob){
-        this.message="initial commit";
+        this.message=message;
         this.time= new Date();
         this.parentID=parentID;
         this.fileBlob=fileBlob;
