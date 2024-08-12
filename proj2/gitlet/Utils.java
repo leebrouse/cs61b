@@ -18,6 +18,8 @@ import java.util.Arrays;
 import java.util.Formatter;
 import java.util.List;
 
+import static gitlet.GitletPath.*;
+
 
 /** Assorted utilities.
  *
@@ -235,5 +237,25 @@ class Utils {
     static void message(String msg, Object... args) {
         System.out.printf(msg, args);
         System.out.println();
+    }
+
+    static boolean fileAddStageExist(String fileName){
+        File file=join(ADD_DIR,fileName);
+        if (file.exists()){
+            return true;
+        }
+
+        file.delete();
+        return false;
+    }
+
+    static boolean fileRemoveStageExist(String fileName){
+        File file=join(REMOVE_DIR,fileName);
+        if (file.exists()){
+            return true;
+        }
+
+        file.delete();
+        return false;
     }
 }

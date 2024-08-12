@@ -10,12 +10,11 @@ import static gitlet.Utils.*;
 import static gitlet.Utils.readContentsAsString;
 
 public class CommitUtils {
-    /** read Commit records  */
+    /** Read Commit records  */
     public static void initCommit(){
         File[] commitFile=join(COMMIT_DIR).listFiles();
         if (commitFile==null){
             System.out.println("The commitStage is empty");
-            return;
         }else {
             for (File file:commitFile){
                 commitLinkedList.add(file.getName());
@@ -24,14 +23,31 @@ public class CommitUtils {
 
     }
 
-    /** get new commitID*/
+    /** Get new commitID*/
     public static String getCommitID(Commit commit) {
         byte[] commitCode = serialize(commit); // 序列化提交对象
         String commitID = sha1(commitCode);
         return commitID;
     }
 
-    /** get prev commitID  */
+    /** Get current CommitID*/
+    public static String getCurrentCommitID(){
+
+        String currentBranch=readContentsAsString(HEAD_DIR);
+        return readContentsAsString(
+                join(BRANCH_DIR,currentBranch)
+                );
+    }
+
+    /** Get current Commit object */
+    public static Commit getCurrentCommit(){
+
+        File currentFile=join(COMMIT_DIR,getCurrentCommitID());
+        return readObject(currentFile,Commit.class);
+
+    }
+
+    /** Get prev commitID  */
     public static String getParentID(){
         File master=join(BRANCH_DIR,"master");
         String parentID = readContentsAsString(master);
@@ -47,17 +63,20 @@ public class CommitUtils {
         return commitID;
     }
 
+    /** Update Master Position */
     public static void upDateMaster(String newCommitID){
         File currentBranch=join(BRANCH_DIR,MASTER_BRANCH_NAME);
         writeContents(currentBranch,newCommitID);
     }
 
+    /** Clean addStage */
     public static void addFileClear(File[] addFILE){
         for (File file:addFILE) {
             file.delete();
         }
     }
 
+    /** The log of Date Format */
     public static String DateFormat(Date date){
         SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy Z", Locale.US);
         sdf.setTimeZone(TimeZone.getTimeZone("GMT-8"));

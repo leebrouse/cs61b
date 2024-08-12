@@ -2,10 +2,10 @@ package gitlet;
 
 import java.io.File;
 import java.util.HashMap;
-
 import static gitlet.BlobsUtils.*;
 import static gitlet.CommitUtils.*;
 import static gitlet.GitletPath.*;
+import static gitlet.Status.*;
 import static gitlet.Utils.*;
 
 // TODO: any imports you need here
@@ -64,6 +64,10 @@ public class Repository {
             return;
         }else if (checkAddExisted(fileName)){
             return;
+        }else if (fileRemoveStageExist(fileName)){
+            File removeFile=join(REMOVE_DIR,fileName);
+            removeFile.delete();
+            return;
         }
 
         /** creat the file snap and copy it into INDEX_DIR */
@@ -109,6 +113,29 @@ public class Repository {
 
     }
 
+    public static void rm(String fileName){
+
+        File addStageFile=join(ADD_DIR,fileName);
+
+        if (addStageFile.exists()){
+           addStageFile.delete();
+        }else if (getCurrentCommit().getFileBlob().containsKey(fileName)){
+            // Copy it into the removeStage
+            File removeFile=join(REMOVE_DIR,fileName);
+            writeContents(
+                    removeFile,
+                    readContentsAsString(join(CWD,fileName))
+            );
+
+            // Remove the target file in the cwd
+            restrictedDelete(join(CWD,fileName));
+        } else {
+            addStageFile.delete();
+            System.out.println("No reason to remove the file.");
+        }
+
+    }
+
     public static void basic_Checkout(String fileName){
         //get current commitID
         String currentBranch=readContentsAsString(join(HEAD_DIR));
@@ -150,6 +177,23 @@ public class Repository {
                     readContentsAsString(join(BLOBS_DIR,blobID))
             );
         }
+    }
+
+    public static void status(){
+        //Branch
+        branch();
+
+        //Staged Files
+        stageFile();
+
+        //Removed Files
+        removedFile();
+
+        //Modifications Not Staged For Commit
+        modifications();
+
+        //Untracked Files
+        untrackedFiles();
     }
 
     public static void log(){

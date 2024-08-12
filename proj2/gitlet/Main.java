@@ -47,7 +47,7 @@ public class Main {
                     System.out.println("Usage:java gitlet.Main rm [file name]");
                     return;
                 }
-                //Repository.rm(args[1]);
+                Repository.rm(args[1]);
                 break;
             case "checkout":
                 if(args.length != 2&&args.length != 3&&args.length!=4) {
@@ -105,7 +105,7 @@ public class Main {
                     System.out.println("Usage: java gitlet.Main status");
                     return;
                 }
-                //Repository.status();
+                Repository.status();
                 break;
             default:
                 System.out.println("No command with that name exists.");
