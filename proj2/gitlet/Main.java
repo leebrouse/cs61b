@@ -1,15 +1,14 @@
 package gitlet;
 
 /** Driver class for Gitlet, a subset of the Git version-control system.
- *  @author Leebrouse
+ *  @author TODO
  */
 public class Main {
 
     /** Usage: java gitlet.Main ARGS, where ARGS contains
      *  <COMMAND> <OPERAND1> <OPERAND2> ... 
      */
-   public static void main(String[] args) {
-
+    public static void main(String[] args) {
         // TODO: what if args is empty?
         if(args.length==0){
             System.out.println("Please enter a command.");
@@ -19,7 +18,7 @@ public class Main {
         String firstArg = args[0];
         switch(firstArg) {
             case "init":
-                // TODO: handle the `init` commandmake
+                // TODO: handle the `init` command
                 if(args.length != 1){
                     System.out.println("The init Usage: init");
                     return ;
@@ -48,7 +47,7 @@ public class Main {
                     System.out.println("Usage:java gitlet.Main rm [file name]");
                     return;
                 }
-                Repository.rm(args[1]);
+                //Repository.rm(args[1]);
                 break;
             case "checkout":
                 if(args.length != 2&&args.length != 3&&args.length!=4) {
@@ -58,7 +57,7 @@ public class Main {
                     return;
                 }
                 if (args.length == 2){
-                  Repository.CheckBranch(args[1]);
+                    //Repository.CheckBranch(args[1]);
                 } else if (args.length == 3) {
                     Repository.basic_Checkout(args[2]);
                 }else {
@@ -72,13 +71,13 @@ public class Main {
                 if(args.length != 2){
                     System.out.println("Usage:java gitlet.Main branch [branch name]");
                 }
-                Repository.branch(args[1]);
+                //Repository.branch(args[1]);
                 break;
             case "rm-branch":
                 if(args.length != 2){
                     System.out.println("Usage:java gitlet.Main rm-branch [branch name]");
                 }
-                Repository.rm_branch(args[1]);
+                //Repository.rm_branch(args[1]);
                 break;
             case "log":
                 if(args.length != 1){
@@ -92,24 +91,25 @@ public class Main {
                     System.out.println("Usage: global-log");
                     return ;
                 }
-                Repository.global_log();
+                //Repository.global_log();
                 break;
             case "find":
                 if (args.length != 2){
                     System.out.println("Usage: find [commit message]");
                     return ;
                 }
-                Repository.find(args[1]);
+                //Repository.find(args[1]);
                 break;
             case "status":
                 if (args.length!=1){
                     System.out.println("Usage: java gitlet.Main status");
                     return;
                 }
-                Repository.status();
+                //Repository.status();
                 break;
             default:
                 System.out.println("No command with that name exists.");
+
         }
     }
 }
