@@ -219,4 +219,11 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
         }
         return true;
     }
+
+    public static void main(String[] args) {
+        ArrayDeque<String> arrayDeque=new ArrayDeque<>();
+        for (int i = 0; i <10 ; i++) {
+            arrayDeque.addFirst("HELLO");
+        }
+    }
 }
