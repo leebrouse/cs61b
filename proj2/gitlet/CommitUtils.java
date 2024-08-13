@@ -2,6 +2,7 @@ package gitlet;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -30,6 +31,13 @@ public class CommitUtils {
         return commitID;
     }
 
+    /** Get prev commitID  */
+    public static String getParentID(){
+        File master=join(BRANCH_DIR,"master");
+        String parentID = readContentsAsString(master);
+        return parentID;
+    }
+
     /** Get current CommitID*/
     public static String getCurrentCommitID(){
 
@@ -45,13 +53,6 @@ public class CommitUtils {
         File currentFile=join(COMMIT_DIR,getCurrentCommitID());
         return readObject(currentFile,Commit.class);
 
-    }
-
-    /** Get prev commitID  */
-    public static String getParentID(){
-        File master=join(BRANCH_DIR,"master");
-        String parentID = readContentsAsString(master);
-        return parentID;
     }
 
     /** input newCommit to the addStage and return this commitID  */
@@ -70,10 +71,70 @@ public class CommitUtils {
     }
 
     /** Clean addStage */
-    public static void addFileClear(File[] addFILE){
-        for (File file:addFILE) {
-            file.delete();
+    public static void addFileClear(List<String> addFILEList){
+        if (!addFILEList.isEmpty()){
+
+            for (String fileName:addFILEList) {
+                //clear index addFile
+                join(ADD_DIR,fileName).delete();
+            }
+
         }
+
+    }
+
+    /** Clean removeStage */
+    public static void removeFileClear(List<String> removeFILEList){
+        if (!removeFILEList.isEmpty()){
+
+            for (String fileName:removeFILEList) {
+                //clear index removeFile
+                join(REMOVE_DIR,fileName).delete();
+            }
+
+        }
+
+    }
+
+    /** Check whether the file exists in the commit*/
+    public static boolean fileExistInCommit(Commit currentCommit,String fileName){
+        if (currentCommit.getFileBlob().containsKey(fileName)){
+            return true;
+        }
+        return false;
+    }
+
+    /** Check whether the file content which exists in the commit is same*/
+    public static boolean fileContentIsSame(Commit currentCommit,String fileName){
+
+        if (fileExistInCommit(currentCommit,fileName)){
+
+            String cwdFileContent=readContentsAsString(join(CWD,fileName));
+
+            //Get blob content
+            String blobID=currentCommit.getFileBlob().get(fileName);
+            File blob=join(BLOBS_DIR,blobID);
+            String blobFileContent=readContentsAsString(blob);
+
+            if (cwdFileContent.equals(blobFileContent)){
+                return true;
+            }
+
+        }
+        return false;
+    }
+
+    /** Check whether the currentCommit has tracked this file*/
+    public static boolean fileCommitTracked(String fileName){
+        Commit currentCommit=getCurrentCommit();
+        boolean check1=fileExistInCommit(currentCommit,fileName);
+        boolean check2=fileContentIsSame(currentCommit,fileName);
+
+        if (check1&&check2){
+            return true;
+        }
+
+        return false;
     }
 
     /** The log of Date Format */

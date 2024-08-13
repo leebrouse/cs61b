@@ -2,6 +2,8 @@ package gitlet;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
+
 import static gitlet.BlobsUtils.*;
 import static gitlet.CommitUtils.*;
 import static gitlet.GitletPath.*;
@@ -64,7 +66,10 @@ public class Repository {
             return;
         }else if (checkAddExisted(fileName)){
             return;
-        }else if (fileRemoveStageExist(fileName)){
+        } else if (fileCommitTracked(fileName)) {
+            //if commit Tracked the same content in this file,don`t add it into addStage
+            return;
+        } else if (fileRemoveStageExist(fileName)){
             File removeFile=join(REMOVE_DIR,fileName);
             removeFile.delete();
             return;
@@ -85,20 +90,30 @@ public class Repository {
     }
 
     public static void commit(String message){
+        /**Read addFileList */
+        List<String> addFileList=plainFilenamesIn(ADD_DIR);
 
-        File[] addFILE=join(ADD_DIR).listFiles();
-        if (addFILE == null) {
-            System.out.println("The addStage is empty ");
+        /**Read removeFileList */
+        List<String> removeFileList=plainFilenamesIn(REMOVE_DIR);
+
+        if (addFileList.isEmpty()&&removeFileList.isEmpty()) {
+            System.out.println("No changes added to the commit.");
             return;
         }else {
+
             HashMap<String,String> fileBlob=new HashMap<>();
 
-            /** create fileBlob hashmap */
-            for (File file:addFILE) {
-                String blobID = sha1(readContentsAsString(file));
-                fileBlob.put(file.getName(), blobID);
+            if (!addFileList.isEmpty()){
+                /** create fileBlob hashmap */
+                for (String fileName:addFileList) {
+                    String blobID = sha1(readContentsAsString(
+                            join(ADD_DIR,fileName)
+                    ));
+                    fileBlob.put(fileName, blobID);
+                }
             }
 
+            //create new Commit
             String parentID=getParentID();
             Commit newCommit=new Commit(message,parentID,fileBlob);
             String newCommitID = writeNewCommit(newCommit);
@@ -107,7 +122,10 @@ public class Repository {
             upDateMaster(newCommitID);
 
             //clear the addStage
-            addFileClear(addFILE);
+            addFileClear(addFileList);
+
+            //clear the removeStage
+            removeFileClear(removeFileList);
         }
 
 
