@@ -7,7 +7,7 @@ import static gitlet.Utils.plainFilenamesIn;
 import static gitlet.Utils.readContentsAsString;
 
 public class Status {
-    public static void branch(){
+    public static void Branch(){
         //Branch
         String currentBranch=readContentsAsString(HEAD_DIR);
         List<String> BranchList=plainFilenamesIn(BRANCH_DIR);
@@ -25,7 +25,7 @@ public class Status {
     public static void stageFile(){
         List<String> addList=plainFilenamesIn(ADD_DIR);
         System.out.println("=== Staged Files ===");
-        if (addList != null) {
+        if (!addList.isEmpty()) {
             for (String addFileName:addList){
                 System.out.println(addFileName);
             }
@@ -36,7 +36,7 @@ public class Status {
     public static void removedFile(){
         List<String> removeList=plainFilenamesIn(REMOVE_DIR);
         System.out.println("=== Removed Files ===");
-        if (removeList != null) {
+        if (!removeList.isEmpty()) {
             for (String removeFileName:removeList){
                 System.out.println(removeFileName);
             }

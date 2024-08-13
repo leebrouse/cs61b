@@ -57,12 +57,13 @@ public class Main {
                     return;
                 }
                 if (args.length == 2){
-                    //Repository.CheckBranch(args[1]);
+                    Repository.CheckBranch(args[1]);
                 } else if (args.length == 3) {
                     Repository.basic_Checkout(args[2]);
                 }else {
                     if (!args[2].equals("--")){
                         System.out.println("Incorrect operands.");
+                        return;
                     }
                     Repository.prev_Checkout(args[1],args[3]);
                 }
@@ -71,13 +72,13 @@ public class Main {
                 if(args.length != 2){
                     System.out.println("Usage:java gitlet.Main branch [branch name]");
                 }
-                //Repository.branch(args[1]);
+                Repository.branch(args[1]);
                 break;
             case "rm-branch":
                 if(args.length != 2){
                     System.out.println("Usage:java gitlet.Main rm-branch [branch name]");
                 }
-                //Repository.rm_branch(args[1]);
+                Repository.rm_branch(args[1]);
                 break;
             case "log":
                 if(args.length != 1){
@@ -91,14 +92,14 @@ public class Main {
                     System.out.println("Usage: global-log");
                     return ;
                 }
-                //Repository.global_log();
+                Repository.global_log();
                 break;
             case "find":
                 if (args.length != 2){
                     System.out.println("Usage: find [commit message]");
                     return ;
                 }
-                //Repository.find(args[1]);
+                Repository.find(args[1]);
                 break;
             case "status":
                 if (args.length!=1){

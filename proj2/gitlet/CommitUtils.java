@@ -13,13 +13,11 @@ import static gitlet.Utils.readContentsAsString;
 public class CommitUtils {
     /** Read Commit records  */
     public static void initCommit(){
-        File[] commitFile=join(COMMIT_DIR).listFiles();
-        if (commitFile==null){
+       List<String> commitFile=plainFilenamesIn(COMMIT_DIR);
+        if (commitFile.isEmpty()){
             System.out.println("The commitStage is empty");
         }else {
-            for (File file:commitFile){
-                commitLinkedList.add(file.getName());
-            }
+            commitLinkedList.addAll(commitFile);
         }
 
     }
@@ -66,7 +64,7 @@ public class CommitUtils {
 
     /** Update Master Position */
     public static void upDateMaster(String newCommitID){
-        File currentBranch=join(BRANCH_DIR,MASTER_BRANCH_NAME);
+        File currentBranch=join(BRANCH_DIR,readContentsAsString(HEAD_DIR));
         writeContents(currentBranch,newCommitID);
     }
 
@@ -98,10 +96,12 @@ public class CommitUtils {
 
     /** Check whether the file exists in the commit*/
     public static boolean fileExistInCommit(Commit currentCommit,String fileName){
-        if (currentCommit.getFileBlob().containsKey(fileName)){
-            return true;
-        }
-        return false;
+        return currentCommit.getFileBlob().containsKey(fileName);
+    }
+
+    public static boolean fileExistInCommit(String currentCommitID,String fileName){
+        Commit currentCommit=readObject(join(COMMIT_DIR,currentCommitID), Commit.class);
+        return currentCommit.getFileBlob().containsKey(fileName);
     }
 
     /** Check whether the file content which exists in the commit is same*/
@@ -116,12 +116,14 @@ public class CommitUtils {
             File blob=join(BLOBS_DIR,blobID);
             String blobFileContent=readContentsAsString(blob);
 
-            if (cwdFileContent.equals(blobFileContent)){
-                return true;
-            }
-
+            return cwdFileContent.equals(blobFileContent);
         }
         return false;
+    }
+
+    /** Check whether the commitID is existed in commitDir */
+    public static boolean commitID_Exist_In_CommitList(List<String> commitIDList,String commitID){
+        return commitIDList.contains(commitID);
     }
 
     /** Check whether the currentCommit has tracked this file*/
@@ -135,6 +137,11 @@ public class CommitUtils {
         }
 
         return false;
+    }
+
+    /** Get current Branch */
+    public static String getCurrentBranch(){
+        return readContentsAsString(HEAD_DIR);
     }
 
     /** The log of Date Format */

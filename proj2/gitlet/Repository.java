@@ -1,10 +1,13 @@
 package gitlet;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
 import static gitlet.BlobsUtils.*;
+import static gitlet.BranchUtils.*;
 import static gitlet.CommitUtils.*;
 import static gitlet.GitletPath.*;
 import static gitlet.Status.*;
@@ -137,17 +140,29 @@ public class Repository {
 
         if (addStageFile.exists()){
            addStageFile.delete();
-        }else if (getCurrentCommit().getFileBlob().containsKey(fileName)){
-            // Copy it into the removeStage
-            File removeFile=join(REMOVE_DIR,fileName);
-            writeContents(
-                    removeFile,
-                    readContentsAsString(join(CWD,fileName))
-            );
+        } else if (getCurrentCommit().getFileBlob().containsKey(fileName)){
 
-            // Remove the target file in the cwd
-            restrictedDelete(join(CWD,fileName));
-        } else {
+            //file isn`t existed in cwd
+            if (!join(CWD,fileName).exists()){
+
+                String blobID=getCurrentCommit().getFileBlob().get(fileName);
+                String blobContent=readContentsAsString(join(BLOBS_DIR,blobID));
+
+                File removeFile=join(REMOVE_DIR,fileName);
+                writeContents(removeFile, blobContent);
+            }else {
+                // Copy it into the removeStage
+                File removeFile=join(REMOVE_DIR,fileName);
+                writeContents(
+                        removeFile,
+                        readContentsAsString(join(CWD,fileName))
+                );
+
+                // Remove the target file in the cwd
+                restrictedDelete(join(CWD,fileName));
+            }
+
+        }else {
             addStageFile.delete();
             System.out.println("No reason to remove the file.");
         }
@@ -177,8 +192,16 @@ public class Repository {
 
     public static void prev_Checkout(String commitID,String fileName){
 
+        List<String> commitIDList=plainFilenamesIn(COMMIT_DIR);
+
         File checkoutCommitFile=join(COMMIT_DIR,commitID);
         if (!checkoutCommitFile.exists()){
+            System.out.println("No commit with that id exists.");
+            return;
+        } else if (!fileExistInCommit(commitID,fileName)) {
+            System.out.println("File does not exist in that commit.");
+            return;
+        }else if (!commitID_Exist_In_CommitList(commitIDList,commitID)){
             System.out.println("No commit with that id exists.");
             return;
         }
@@ -197,9 +220,34 @@ public class Repository {
         }
     }
 
+    public static void CheckBranch(String branch) {
+       List<String> branchList=plainFilenamesIn(BRANCH_DIR);
+
+       if (!branchList.contains(branch)){
+           System.out.println("No such branch exists.");
+       } else if (getCurrentBranch().equals(branch)) {
+           System.out.println("No need to checkout the current branch.");
+       }else {
+           //update the branch
+           writeContents(join(HEAD_DIR),branch);
+
+           //get cwd File List
+           List<String> cwdFileList=plainFilenamesIn(CWD);
+
+           //get current commit
+           Commit currentCommit=getCurrentCommit();
+
+           //get current commit Hashmap key Collection
+           Collection<String> commitFileSets=currentCommit.getFileBlob().keySet();
+
+           delete_Unessential_CwdFile(cwdFileList,currentCommit) ;
+           update_cwdFile(commitFileSets,currentCommit);
+       }
+    }
+
     public static void status(){
         //Branch
-        branch();
+        Branch();
 
         //Staged Files
         stageFile();
@@ -240,4 +288,69 @@ public class Repository {
         }
     }
 
+    public static void global_log() {
+        List<String> commitList=plainFilenamesIn(COMMIT_DIR);
+        if (!commitList.isEmpty()) {
+            for (String commitID:commitList){
+                System.out.println("===");
+                System.out.println("commit "+commitID);
+
+                Commit commit=readObject(join(COMMIT_DIR,commitID), Commit.class);
+                String FormatDate= DateFormat(commit.getTime());
+                System.out.println("Date: "+FormatDate);
+
+                System.out.println(commit.getMessage());
+                System.out.println();
+            }
+        }
+    }
+
+    public static void find(String message) {
+        List<String> commitList=plainFilenamesIn(COMMIT_DIR);
+
+        if (!commitList.isEmpty()){
+            // find all required commitIDs and add it into the List
+            ArrayList<String> requireCommitIDList=new ArrayList<>();
+            for (String commitID:commitList){
+               Commit commit=readObject(join(COMMIT_DIR,commitID), Commit.class);
+               String commitContent=commit.getMessage();
+
+               if (commitContent.equals(message)){
+                   requireCommitIDList.add(commitID);
+               }
+            }
+
+            if (!requireCommitIDList.isEmpty()){
+                //Print all required commitID
+                for (String requiredCommitID : requireCommitIDList) {
+                    System.out.println(requiredCommitID);
+                }
+            }else {
+                System.out.println("Found no commit with that message.");
+            }
+        }
+
+    }
+
+    public static void branch(String branch) {
+        //Create a new branch
+        File newBranch=join(BRANCH_DIR,branch);
+        if (newBranch.exists()){
+            System.out.println("A branch with that name already exists.");
+        }else {
+            writeContents(newBranch,getCurrentCommitID());
+        }
+    }
+
+    public static void rm_branch(String branch) {
+        File removeBranch=join(BRANCH_DIR,branch);
+        if (!removeBranch.exists()){
+            System.out.println("A branch with that name does not exist.");
+        }else if (getCurrentBranch().equals(branch)){
+            System.out.println("Cannot remove the current branch.");
+        } else {
+            removeBranch.delete();
+        }
+
+    }
 }
