@@ -66,26 +66,26 @@ public class Repository {
             return;
         }else if (checkAddExisted(fileName)){
             return;
-        } else if (fileCommitTracked(fileName)) {
-            //if commit Tracked the same content in this file,don`t add it into addStage
-            return;
-        } else if (fileRemoveStageExist(fileName)){
+        }else if (fileRemoveStageExist(fileName)){
             File removeFile=join(REMOVE_DIR,fileName);
             removeFile.delete();
             return;
+        } else if (!fileCommitTracked(fileName)) {
+            //if commit Tracked the same content in this file,don`t add it into addStage
+
+            /** creat the file snap and copy it into INDEX_DIR */
+            Blobs blob=new Blobs(fileName);
+            String blobName= blob.getBlobID();
+            File blobFile=join(BLOBS_DIR,blobName);
+            /** input the cwdFile`s content to the blobFile. */
+            String blobContent=blob.getBlobContent();
+            writeContents(blobFile,blobContent);
+
+            /** copy the file into the ADD_DIR */
+            File addFile=join(ADD_DIR,fileName);
+            writeContents(addFile,blobContent);
+
         }
-
-        /** creat the file snap and copy it into INDEX_DIR */
-        Blobs blob=new Blobs(fileName);
-        String blobName= blob.getBlobID();
-        File blobFile=join(BLOBS_DIR,blobName);
-        /** input the cwdFile`s content to the blobFile. */
-        String blobContent=blob.getBlobContent();
-        writeContents(blobFile,blobContent);
-
-        /** copy the file into the ADD_DIR */
-        File addFile=join(ADD_DIR,fileName);
-        writeContents(addFile,blobContent);
 
     }
 
