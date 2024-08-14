@@ -44,12 +44,13 @@ public class BranchUtils {
     public static boolean branchFileOverWrite(String cwdFileName,String branch){
         File cwdFile=join(CWD,cwdFileName);
         String blobID=sha1(readContentsAsString(cwdFile));
+
         //should get branch commitID
         String branchCommitID=readContentsAsString(join(BRANCH_DIR,branch));
         Commit branchCommit=readObject(join(COMMIT_DIR,branchCommitID), Commit.class);
 
         if (!fileExistInCommit(branchCommit,cwdFileName)){
-            return true;
+            return false;
         }else {
             String currentBranchBlobID=branchCommit.getFileBlob().get(cwdFileName);
 
@@ -71,6 +72,11 @@ public class BranchUtils {
         return true;
     }
 
+    public static boolean  branchTracked(String branch){
+        List<String> cwdFileList=plainFilenamesIn(CWD);
+        return fileAddStageTracked(cwdFileList,branch);
+    }
+
     /** find the matching commitID in the commitList*/
     public static String matchingCommit(String subCommitID){
         List<String> commitList=plainFilenamesIn(COMMIT_DIR);
@@ -81,10 +87,5 @@ public class BranchUtils {
             }
         }
         return subCommitID;
-    }
-
-    public static boolean  branchTracked(String branch){
-        List<String> cwdFileList=plainFilenamesIn(CWD);
-        return fileAddStageTracked(cwdFileList,branch);
     }
 }
