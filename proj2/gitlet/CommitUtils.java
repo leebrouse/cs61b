@@ -93,7 +93,7 @@ public class CommitUtils {
         }
 
     }
-
+    /** using clean addStage and removeStage*/
     public static void stageClean(){
         List<String> addFILEList=plainFilenamesIn(ADD_DIR);
         List<String> removeFILEList=plainFilenamesIn(REMOVE_DIR);
@@ -144,24 +144,29 @@ public class CommitUtils {
         return commitIDList.contains(commitID);
     }
 
-    /** Check whether the cwdFile should be overwritten */
-    public static boolean fileOverWrite(String cwdFileName){
+    /** Check whether the cwdFile should be overwritten (using commitID) */
+    public static boolean fileOverWrite(String cwdFileName,String commitID){
         File cwdFile=join(CWD,cwdFileName);
         String blobID=sha1(readContentsAsString(cwdFile));
+        //should get reset commitID
+        Commit resetCommit=readObject(join(COMMIT_DIR,commitID), Commit.class);
 
-        Commit currentBranchCommit=getCurrentCommit();
-        String currentBranchBlobID=currentBranchCommit.getFileBlob().get(cwdFileName);
+        if (!fileExistInCommit(resetCommit,cwdFileName)){
+            return true;
+        }else {
+            String currentBranchBlobID=resetCommit.getFileBlob().get(cwdFileName);
 
-        return !blobID.equals(currentBranchBlobID);
+            return !blobID.equals(currentBranchBlobID);
+        }
     }
 
     /** Check whether the addStage has tracked this file*/
-    public static boolean fileAddStageTracked(List<String> cwdFileList ){
+    public static boolean fileAddStageTracked(List<String> cwdFileList,String commitID){
       List<String> addStageList=plainFilenamesIn(ADD_DIR);
 
       if (!cwdFileList.isEmpty()){
           for (String cwdFile:cwdFileList){
-              if (!addStageList.contains(cwdFile)&&fileOverWrite(cwdFile)){
+              if (!addStageList.contains(cwdFile)&&fileOverWrite(cwdFile,commitID)&&!fileCommitTracked(cwdFile)){
                   return false;
               }
           }
@@ -184,9 +189,9 @@ public class CommitUtils {
     }
 
     /** mixed using fileAddStageTracked , fileRemoveStageTracke */
-    public static boolean stageTracked(){
+    public static boolean stageTracked(String commitID){
         List<String> cwdFileList=plainFilenamesIn(CWD);
-        return fileAddStageTracked(cwdFileList);
+        return fileAddStageTracked(cwdFileList,commitID);
     }
 
 

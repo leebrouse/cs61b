@@ -2,7 +2,6 @@ package gitlet;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -194,6 +193,9 @@ public class Repository {
 
         List<String> commitIDList=plainFilenamesIn(COMMIT_DIR);
 
+        //matching required commitID
+        commitID=matchingCommit(commitID);
+
         File checkoutCommitFile=join(COMMIT_DIR,commitID);
         if (!checkoutCommitFile.exists()){
             System.out.println("No commit with that id exists.");
@@ -227,7 +229,9 @@ public class Repository {
            System.out.println("No such branch exists.");
        } else if (getCurrentBranch().equals(branch)) {
            System.out.println("No need to checkout the current branch.");
-       }else {
+       }else if (!branchTracked(branch)){
+            System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
+       } else {
            //update the branch
            writeContents(join(HEAD_DIR),branch);
 
@@ -356,7 +360,7 @@ public class Repository {
     public static void reset(String commitID) {
         if (!commitID_Exist_In_CommitList(commitID)){
             System.out.println("No commit with that id exists.");
-        }else if(!stageTracked()){
+        }else if(!stageTracked(commitID)){
             System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
         } else {
             //Change the commitID in the current Branch File

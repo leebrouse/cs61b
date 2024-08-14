@@ -33,11 +33,6 @@ public class Main {
                 break;
             case "add":
 
-                if (!checkGitLet()){
-                    System.out.println("Not in an initialized Gitlet directory.");
-                    return;
-                }
-
                 if(args.length != 2){
                     System.out.println("The add Usage: add [filename]");
                     return ;
@@ -47,11 +42,6 @@ public class Main {
                 break;
             // TODO: FILL THE REST IN
             case "commit":
-
-                if (!checkGitLet()){
-                    System.out.println("Not in an initialized Gitlet directory.");
-                    return;
-                }
 
                 if(args.length != 2){
                     System.out.println("Please enter a commit message.");
