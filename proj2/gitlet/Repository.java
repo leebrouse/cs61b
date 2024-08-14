@@ -231,17 +231,11 @@ public class Repository {
            //update the branch
            writeContents(join(HEAD_DIR),branch);
 
-           //get cwd File List
-           List<String> cwdFileList=plainFilenamesIn(CWD);
-
            //get current commit
            Commit currentCommit=getCurrentCommit();
 
-           //get current commit Hashmap key Collection
-           Collection<String> commitFileSets=currentCommit.getFileBlob().keySet();
-
-           delete_Unessential_CwdFile(cwdFileList,currentCommit) ;
-           update_cwdFile(commitFileSets,currentCommit);
+           delete_Unessential_CwdFile(currentCommit) ;
+           update_cwdFile(currentCommit);
        }
     }
 
@@ -271,6 +265,11 @@ public class Repository {
         String CommitID=readContentsAsString(HeadCommit);
 
         for (int i=0;i<commitLinkedList.size();i++){
+
+            if (CommitID == null){
+                return;
+            }
+
             int index=commitLinkedList.indexOf(CommitID);
             String FileName=commitLinkedList.get(index);
             File indexFile=join(COMMIT_DIR,FileName);
@@ -350,6 +349,30 @@ public class Repository {
             System.out.println("Cannot remove the current branch.");
         } else {
             removeBranch.delete();
+        }
+
+    }
+
+    public static void reset(String commitID) {
+        if (!commitID_Exist_In_CommitList(commitID)){
+            System.out.println("No commit with that id exists.");
+        }else if(!stageTracked()){
+            System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
+        } else {
+            //Change the commitID in the current Branch File
+            File currentBranchCommit=join(BRANCH_DIR,getCurrentBranch());
+            writeContents(
+                    currentBranchCommit,
+                    commitID
+            );
+
+            //get current commit
+            Commit currentCommit=getCurrentCommit();
+
+            //change the cwdFile and clean stage
+            delete_Unessential_CwdFile(currentCommit) ;
+            update_cwdFile(currentCommit);
+            stageClean();
         }
 
     }

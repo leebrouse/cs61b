@@ -31,7 +31,7 @@ public class CommitUtils {
 
     /** Get prev commitID  */
     public static String getParentID(){
-        File master=join(BRANCH_DIR,"master");
+        File master=join(BRANCH_DIR,readContentsAsString(HEAD_DIR));
         String parentID = readContentsAsString(master);
         return parentID;
     }
@@ -94,6 +94,19 @@ public class CommitUtils {
 
     }
 
+    public static void stageClean(){
+        List<String> addFILEList=plainFilenamesIn(ADD_DIR);
+        List<String> removeFILEList=plainFilenamesIn(REMOVE_DIR);
+
+        if (!addFILEList.isEmpty()){
+            addFileClear(addFILEList);
+        }else if (!removeFILEList.isEmpty()){
+            removeFileClear(removeFILEList);
+        }
+
+
+    }
+
     /** Check whether the file exists in the commit*/
     public static boolean fileExistInCommit(Commit currentCommit,String fileName){
         return currentCommit.getFileBlob().containsKey(fileName);
@@ -126,6 +139,57 @@ public class CommitUtils {
         return commitIDList.contains(commitID);
     }
 
+    public static boolean commitID_Exist_In_CommitList(String commitID){
+        List<String> commitIDList=plainFilenamesIn(COMMIT_DIR);
+        return commitIDList.contains(commitID);
+    }
+
+    /** Check whether the cwdFile should be overwritten */
+    public static boolean fileOverWrite(String cwdFileName){
+        File cwdFile=join(CWD,cwdFileName);
+        String blobID=sha1(readContentsAsString(cwdFile));
+
+        Commit currentBranchCommit=getCurrentCommit();
+        String currentBranchBlobID=currentBranchCommit.getFileBlob().get(cwdFileName);
+
+        return !blobID.equals(currentBranchBlobID);
+    }
+
+    /** Check whether the addStage has tracked this file*/
+    public static boolean fileAddStageTracked(List<String> cwdFileList ){
+      List<String> addStageList=plainFilenamesIn(ADD_DIR);
+
+      if (!cwdFileList.isEmpty()){
+          for (String cwdFile:cwdFileList){
+              if (!addStageList.contains(cwdFile)&&fileOverWrite(cwdFile)){
+                  return false;
+              }
+          }
+      }
+        return true;
+    }
+
+    /** Check whether the removeStage has tracked this file*/
+    public static boolean fileRemoveStageTracked(List<String> cwdFileList){
+        List<String> removeStageList=plainFilenamesIn(ADD_DIR);
+
+        if (!cwdFileList.isEmpty()){
+            for (String cwdFile:cwdFileList){
+                if (!removeStageList.contains(cwdFile)){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /** mixed using fileAddStageTracked , fileRemoveStageTracke */
+    public static boolean stageTracked(){
+        List<String> cwdFileList=plainFilenamesIn(CWD);
+        return fileAddStageTracked(cwdFileList);
+    }
+
+
     /** Check whether the currentCommit has tracked this file*/
     public static boolean fileCommitTracked(String fileName){
         Commit currentCommit=getCurrentCommit();
@@ -137,11 +201,6 @@ public class CommitUtils {
         }
 
         return false;
-    }
-
-    /** Get current Branch */
-    public static String getCurrentBranch(){
-        return readContentsAsString(HEAD_DIR);
     }
 
     /** The log of Date Format */

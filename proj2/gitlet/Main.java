@@ -1,5 +1,10 @@
 package gitlet;
 
+import java.io.File;
+
+import static gitlet.GitletPath.*;
+import static gitlet.Utils.join;
+
 /** Driver class for Gitlet, a subset of the Git version-control system.
  *  @author TODO
  */
@@ -27,6 +32,12 @@ public class Main {
                 Repository.init();
                 break;
             case "add":
+
+                if (!checkGitLet()){
+                    System.out.println("Not in an initialized Gitlet directory.");
+                    return;
+                }
+
                 if(args.length != 2){
                     System.out.println("The add Usage: add [filename]");
                     return ;
@@ -36,6 +47,12 @@ public class Main {
                 break;
             // TODO: FILL THE REST IN
             case "commit":
+
+                if (!checkGitLet()){
+                    System.out.println("Not in an initialized Gitlet directory.");
+                    return;
+                }
+
                 if(args.length != 2){
                     System.out.println("Please enter a commit message.");
                     return ;
@@ -102,15 +119,35 @@ public class Main {
                 Repository.find(args[1]);
                 break;
             case "status":
+
+                if (!checkGitLet()){
+                    System.out.println("Not in an initialized Gitlet directory.");
+                    return;
+                }
+
                 if (args.length!=1){
                     System.out.println("Usage: java gitlet.Main status");
                     return;
                 }
                 Repository.status();
                 break;
+            case "reset":
+                if (args.length!=2){
+                    System.out.println("Usage: java gitlet.Main reset [commit id]");
+                    return;
+                }
+                Repository.reset(args[1]);
+                break;
             default:
                 System.out.println("No command with that name exists.");
 
         }
     }
+
+    private static boolean checkGitLet(){
+        File gitLet=join(GITLET_DIR);
+        return gitLet.exists();
+    }
+
 }
+
