@@ -2,6 +2,7 @@ package gitlet;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import static gitlet.BlobsUtils.*;
 import static gitlet.BranchUtils.*;
 import static gitlet.CommitUtils.*;
 import static gitlet.GitletPath.*;
+import static gitlet.MergeUtils.*;
 import static gitlet.Status.*;
 import static gitlet.Utils.*;
 
@@ -378,6 +380,36 @@ public class Repository {
             update_cwdFile(currentCommit);
             stageClean();
         }
+    }
+
+
+    public static void merge(String branchName) {
+        String currentBranchCommitID=getCurrentCommitID();
+        File currentBranchCommitFile=join(COMMIT_DIR,currentBranchCommitID);
+        Commit currentBranchCommit=readObject(currentBranchCommitFile, Commit.class);
+        Collection<String> currentBranchFiles=currentBranchCommit.getFileBlob().keySet();
+
+        if (checkConflict(currentBranchFiles,branchName)){
+            createMergeCommitHashmap(branchName);
+        }else {
+            HashMap<String,String> mergeCommitHashmap = createMergeCommitHashmap(branchName);
+
+            //create a newCommit (Name: mergeCommit)
+            String secondCommit=readContentsAsString(join(BRANCH_DIR,branchName));
+            Commit mergeCommit=new Commit(mergeMessage,getCurrentCommitID(),secondCommit,mergeCommitHashmap);
+            String mergeCommitID=writeNewCommit(mergeCommit);
+
+            //upDateMaster
+            upDateMaster(mergeCommitID);
+        }
+
+
+
+
+
+
+        //design the algorithm of finding SplitPoint method
+        //Change the log part (adding: print the log of merging branch part until the nextCommit is SplitPoint)
 
     }
 }

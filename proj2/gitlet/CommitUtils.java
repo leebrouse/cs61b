@@ -22,6 +22,12 @@ public class CommitUtils {
 
     }
 
+    /** Get commit object */
+    public static Commit getCommitObject(String commitID){
+        File commitFile=join(COMMIT_DIR,commitID);
+        return  readObject(commitFile, Commit.class);
+    }
+
     /** Get new commitID*/
     public static String getCommitID(Commit commit) {
         byte[] commitCode = serialize(commit); // 序列化提交对象

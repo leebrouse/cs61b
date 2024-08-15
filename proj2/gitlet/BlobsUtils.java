@@ -28,4 +28,10 @@ public class BlobsUtils {
         return false;
     }
 
+    public static String readBlob(String blobID){
+        if (blobID==null){
+            return null;
+        }
+        return readContentsAsString(join(BLOBS_DIR,blobID));
+    }
 }

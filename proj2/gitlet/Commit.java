@@ -26,6 +26,7 @@ public class Commit implements Serializable {
     private String message;
     private Date time;
     private String parentID;
+    private String secondParentID;
     private HashMap<String,String> fileBlob;
 
     /* TODO: fill in the rest of this class. */
@@ -40,6 +41,15 @@ public class Commit implements Serializable {
         this.message=message;
         this.time= new Date();
         this.parentID=parentID;
+        this.secondParentID=null;
+        this.fileBlob=fileBlob;
+    }
+
+    public Commit(String message, String parentID,String secondParentID,HashMap<String,String> fileBlob){
+        this.message=message;
+        this.time= new Date();
+        this.parentID=parentID;
+        this.secondParentID=secondParentID;
         this.fileBlob=fileBlob;
     }
 
