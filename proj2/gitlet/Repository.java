@@ -390,8 +390,8 @@ public class Repository {
         Collection<String> currentBranchFiles=currentBranchCommit.getFileBlob().keySet();
 
         if (checkConflict(currentBranchFiles,branchName)){
-            createMergeCommitHashmap(branchName);
-        }else {
+            System.out.println("Encountered a merge conflict. ");
+        }
             HashMap<String,String> mergeCommitHashmap = createMergeCommitHashmap(branchName);
 
             //create a newCommit (Name: mergeCommit)
@@ -401,15 +401,9 @@ public class Repository {
 
             //upDateMaster
             upDateMaster(mergeCommitID);
-        }
 
-
-
-
-
-
-        //design the algorithm of finding SplitPoint method
-        //Change the log part (adding: print the log of merging branch part until the nextCommit is SplitPoint)
+            //design the algorithm of finding SplitPoint method
+            //Change the log part (adding: print the log of merging branch part until the nextCommit is SplitPoint)
 
     }
 }

@@ -82,10 +82,9 @@ public class MergeUtils {
                         readBlob(currentBranchBlobID) +
                         "=======\n" +
                         readBlob(mergeBlobID)+
-                        ">>>>>>>";
+                        ">>>>>>>"+"\n";
 
                 if (!SplitPointBlobID.equals(currentBranchBlobID)){
-                    System.out.println("Encountered a merge conflict.");
 
                     writeContents(join(CWD,currentBranchFile),conFlictContent);
 
