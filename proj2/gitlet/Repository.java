@@ -100,6 +100,9 @@ public class Repository {
         /**Read removeFileList */
         List<String> removeFileList=plainFilenamesIn(REMOVE_DIR);
 
+        /**Read cwdFileList*/
+        List<String> cwdFileList=plainFilenamesIn(CWD);
+
         if (addFileList.isEmpty()&&removeFileList.isEmpty()) {
             System.out.println("No changes added to the commit.");
             return;
@@ -114,6 +117,15 @@ public class Repository {
                             join(ADD_DIR,fileName)
                     ));
                     fileBlob.put(fileName, blobID);
+                }
+
+                for (String cwdFile:cwdFileList){
+                    if (fileCommitTracked(cwdFile)){
+                        String blobID = sha1(readContentsAsString(
+                                join(CWD,cwdFile)
+                        ));
+                        fileBlob.put(cwdFile, blobID);
+                    }
                 }
             }
 
@@ -389,9 +401,20 @@ public class Repository {
         Commit currentBranchCommit=readObject(currentBranchCommitFile, Commit.class);
         Collection<String> currentBranchFiles=currentBranchCommit.getFileBlob().keySet();
 
-        if (checkConflict(currentBranchFiles,branchName)){
-            System.out.println("Encountered a merge conflict. ");
-        }
+        if (getCurrentBranch().equals(branchName)) {//merge err check
+            System.out.println("Cannot merge a branch with itself.");
+        }else if(!checkBranchExist(branchName)){
+            System.out.println("A branch with that name does not exist.");
+        }else if (!branchTracked(branchName)){
+            System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
+        }else if (!checkAddStageEmpty()){
+            System.out.println("You have uncommitted changes.");
+        }else {
+
+            if (checkConflict(currentBranchFiles,branchName)){
+                System.out.println("Encountered a merge conflict. ");
+            }
+
             HashMap<String,String> mergeCommitHashmap = createMergeCommitHashmap(branchName);
 
             //create a newCommit (Name: mergeCommit)
@@ -402,8 +425,7 @@ public class Repository {
             //upDateMaster
             upDateMaster(mergeCommitID);
 
-            //design the algorithm of finding SplitPoint method
-            //Change the log part (adding: print the log of merging branch part until the nextCommit is SplitPoint)
-
+        }
+        //Change the log part (adding: print the log of merging branch part until the nextCommit is SplitPoint)
     }
 }

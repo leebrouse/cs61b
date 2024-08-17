@@ -1,6 +1,8 @@
 package gitlet;
 
 import java.io.File;
+import java.util.List;
+
 import static gitlet.GitletPath.*;
 import static gitlet.Utils.*;
 
@@ -26,6 +28,20 @@ public class BlobsUtils {
 
         removeFile.delete();
         return false;
+    }
+
+    public static boolean checkAddStageEmpty(){
+        List<String> addStageList=plainFilenamesIn(ADD_DIR);
+
+        if (addStageList.isEmpty()){
+            return true;
+        }
+        return false;
+    }
+
+
+    public static boolean checkReadBlob(String blobID){
+        return readBlob(blobID) != null;
     }
 
     public static String readBlob(String blobID){

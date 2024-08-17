@@ -1,8 +1,7 @@
 package gitlet;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.*;
 
 import static gitlet.BlobsUtils.*;
 import static gitlet.BranchUtils.*;
@@ -12,12 +11,122 @@ import static gitlet.Utils.*;
 import static java.lang.Math.abs;
 
 public class MergeUtils {
-    private String SplitPointCommit;
     public static final String mergeMessage="Merged other into master.";
 
     public static String conflictFileName;
+
+    /** Using DFS to find splitPoint */
+    static Commit findSplitPoint(String currentBranch, String mergeBranch) {
+        Set<String> visitedA = new HashSet<>();
+        Set<String> visitedB = new HashSet<>();
+
+        // 对两个分支的最新提交节点进行 DFS
+        Commit splitPoint = dfs(getCommitID(getCommitObject(readContentsAsString(join(BRANCH_DIR,currentBranch)))), visitedA, visitedB);
+
+        if (splitPoint != null) return splitPoint;
+
+        splitPoint = dfs(getCommitID(getCommitObject(readContentsAsString(join(BRANCH_DIR,mergeBranch)))), visitedB, visitedA);
+        return splitPoint;
+    }
+
+    private static Commit dfs(String commit, Set<String> visited, Set<String> otherVisited) {
+        if (commit == null || visited.contains(commit)) {
+            return null;
+        }
+
+        visited.add(commit);
+
+        // 如果该提交节点已经在另一个分支的遍历中访问过，那么它就是 split point
+        if (otherVisited.contains(commit)) {
+            return getCommitObject(commit);
+        }
+
+        // 继续递归访问父节点
+        for (Commit parent : getParentList(getCommitObject(commit))) {
+            Commit result = dfs(getCommitID(parent), visited, otherVisited);
+            if (result != null) {
+                return result;
+            }
+        }
+
+        return null;
+    }
+
+    public static List <Commit> getParentList(Commit commit){
+            List <Commit> commitList=new ArrayList<>();
+
+            if (commit.getParentID() != null){
+            commitList.add(getCommitObject(commit.getParentID()));
+            }
+
+            if (commit.getSecondParentID() != null){
+                commitList.add(getCommitObject(commit.getSecondParentID()));
+            }
+
+            return commitList;
+    }
+
+    /**Remove file */
+    public static void fileRemove(String fileName){
+        File removeFIle=join(CWD,fileName);
+        if (removeFIle.exists()){
+            removeFIle.delete();
+        }
+    }
+
+    public static void creatFile(File fileName,Commit commit){
+        writeContents(fileName,readContentsAsString(
+                join(BLOBS_DIR,commit.getFileBlob().get(fileName.getName()))
+        ));
+    }
+
+    /** Check two file is different or not*/
+   public static boolean checkDifferent(Commit firstCommit,Commit secondCommit,String fileName){
+       String firstFileBlob=firstCommit.getFileBlob().get(fileName);
+       String secondFileBlob=secondCommit.getFileBlob().get(fileName);
+
+       return !firstFileBlob.equals(secondFileBlob);
+   }
+
+    /** check File Exist in HEAD not exist in merge Branch*/
+    public static void checkFileExist(Commit currentBranchCommit,Commit mergeBranchCommit,Commit splitPoint){
+
+        Collection<String> currentBranchFiles=currentBranchCommit.getFileBlob().keySet();
+        Collection<String> mergeBranchFiles=mergeBranchCommit.getFileBlob().keySet();
+
+        //check SplitPoint File
+        for (String splitPointFile:splitPoint.getFileBlob().keySet()){
+            if (mergeBranchFiles.contains(splitPointFile)&&!currentBranchFiles.contains(splitPointFile)){
+                fileRemove(splitPointFile);
+            }else if (!mergeBranchFiles.contains(splitPointFile)&&currentBranchFiles.contains(splitPointFile)){
+                //check whether having conflict(splitPoint content whether is different from the HeadFile content)
+                fileRemove(splitPointFile);
+            }else if (!mergeBranchFiles.contains(splitPointFile)&&!currentBranchFiles.contains(splitPointFile)){
+                fileRemove(splitPointFile);
+            } else if (mergeBranchFiles.contains(splitPointFile)&&currentBranchFiles.contains(splitPointFile)) {
+
+                if (!checkDifferent(splitPoint,currentBranchCommit,splitPointFile) && checkDifferent(currentBranchCommit,mergeBranchCommit,splitPointFile)){
+                    File cwdFile=join(CWD,splitPointFile);
+                    creatFile(cwdFile,mergeBranchCommit);
+                }else if (checkDifferent(splitPoint,currentBranchCommit,splitPointFile) && checkDifferent(currentBranchCommit,mergeBranchCommit,splitPointFile)){
+                    File cwdFile=join(CWD,splitPointFile);
+                    creatFile(cwdFile,currentBranchCommit);
+                }
+            }
+        }
+
+        //check mergeBranchFile
+        for (String mergeBranchFile:mergeBranchFiles){
+            if (!splitPoint.getFileBlob().containsKey(mergeBranchFile)&&!currentBranchFiles.contains(mergeBranchFile)){
+                File cwdFile=join(CWD,mergeBranchFile);
+                creatFile(cwdFile,mergeBranchCommit);
+            }
+        }
+
+    }
+
     public static HashMap<String,String> createMergeCommitHashmap(String branchName){
-        HashMap<String,String> requiredMap=new HashMap<>();
+
 
         String currentBranchCommitID=getCurrentCommitID();
         String mergeBranchCommitID=readContentsAsString(join(BRANCH_DIR,branchName));
@@ -31,37 +140,26 @@ public class MergeUtils {
         Collection<String> currentBranchFiles=currentBranchCommit.getFileBlob().keySet();
         Collection<String> mergeBranchFiles=mergeBranchCommit.getFileBlob().keySet();
 
-        checkConflict(currentBranchFiles, branchName);
-        mergeBranchFiles.remove(conflictFileName);
+        //remove the file is existed in HEAD and not existed in mergeBranch
+        Commit splitPoint=findSplitPoint(getCurrentBranch(),branchName);
+        checkFileExist(currentBranchCommit, mergeBranchCommit,splitPoint);
 
-        for (String mergeBranchFile:mergeBranchFiles){
-            if (!currentBranchFiles.contains(mergeBranchFile)){
-                String blobID=mergeBranchCommit.getFileBlob().get(mergeBranchFile);
-
-                //creat cwdFile that isn`t existed in mergeBranch
-                File cwdFile=join(CWD,mergeBranchFile);
-                writeContents(cwdFile,readBlob(blobID));
-
-            } else {
-               String currentBranchFileBlobID=currentBranchCommit.getFileBlob().get(mergeBranchFile);
-               String mergeBranchFileBlobID=mergeBranchCommit.getFileBlob().get(mergeBranchFile);
-
-               if (!currentBranchFileBlobID.equals(mergeBranchFileBlobID)){
-                   String mergeBranchFileBlobContent=readBlob(mergeBranchFileBlobID);
-                   writeContents(join(CWD,mergeBranchFile),mergeBranchFileBlobContent);
-
-               }
-            }
+        //create mergeMap and create mergeNode
+        HashMap<String,String> requiredMap=new HashMap<>();
+        List<String> cwdFileList=plainFilenamesIn(CWD);
+        for (String cwdFile:cwdFileList){
+            String fileContent=readContentsAsString(join(CWD,cwdFile));
+            requiredMap.put(cwdFile,sha1(fileContent));
         }
 
         return requiredMap;
     }
 
+    /**check whether having conflict file */
     public static boolean checkConflict(Collection<String> currentBranchFiles, String branchName){
-        String SplitPointID=findSplitPointID(getCurrentBranch(),branchName);
-        Commit SplitPointCommit=readObject(join(COMMIT_DIR,SplitPointID), Commit.class);
 
         Commit currentCommit=getCurrentCommit();
+        Commit SplitPointCommit=findSplitPoint(getCurrentBranch(),branchName);
 
         Collection<String> SplitPointCommitList=SplitPointCommit.getFileBlob().keySet();
         for (String currentBranchFile:currentBranchFiles){
@@ -78,17 +176,24 @@ public class MergeUtils {
                     mergeBlobID=null;
                 }
 
-                String conFlictContent="<<<<<<< HEAD\n" +
-                        readBlob(currentBranchBlobID) +
-                        "=======\n" +
-                        readBlob(mergeBlobID)+
-                        ">>>>>>>"+"\n";
+                //conFlict File content
+                String conFlictContent;
+                if (checkReadBlob(mergeBlobID)){
+
+                     conFlictContent="<<<<<<< HEAD\n" +
+                            readBlob(currentBranchBlobID) +
+                            "=======\n" +
+                            readBlob(mergeBlobID)+
+                            ">>>>>>>\n";
+                }else {
+                    conFlictContent="<<<<<<< HEAD\n" +
+                            readBlob(currentBranchBlobID) +
+                            "=======\n" +
+                            ">>>>>>>\n";
+                }
 
                 if (!SplitPointBlobID.equals(currentBranchBlobID)){
-
                     writeContents(join(CWD,currentBranchFile),conFlictContent);
-
-                    conflictFileName=currentBranchFile;
                     return true;
                 }
             }
@@ -96,70 +201,4 @@ public class MergeUtils {
         return false;
     }
 
-
-    /** get branch commit length */
-    public static int getBranchLength(String branch){
-        int length=0;
-
-        String branchStartCommitID=readContentsAsString(join(BRANCH_DIR,branch));
-        Commit branchStartCommit=getCommitObject(branchStartCommitID);
-
-        while (true){
-            //get the next
-            branchStartCommitID=branchStartCommit.getParentID();
-
-            if ( branchStartCommitID==null){
-                return length;
-            }
-
-            branchStartCommit=getCommitObject(branchStartCommitID);
-            length++;
-
-        }
-
-    }
-
-    /** find SplitPoint Commit object  */
-    public static Commit findSplitPointCommit(Commit currentBranchCommit,Commit mergeBranchCommit){
-        while (true){
-            if (currentBranchCommit.getParentID().equals(mergeBranchCommit.getParentID())){
-                return getCommitObject(currentBranchCommit.getParentID());
-            }
-
-            currentBranchCommit=getCommitObject(currentBranchCommit.getParentID());
-            mergeBranchCommit=getCommitObject(mergeBranchCommit.getParentID());
-        }
-    }
-
-    /** maybe currentBranchLength>=mergeBranchLength,two commitList should have same beginning  */
-    public static String findSplitPointID(String currentBranch,String mergeBranch){
-        //get currentBranchCommit beginning point;
-        String currentBranchCommitID=readContentsAsString(join(BRANCH_DIR,currentBranch));
-        Commit currentBranchCommit=getCommitObject(currentBranchCommitID);
-
-        //get mergeBranchCommit beginning point;
-        String mergeBranchCommitID=readContentsAsString(join(BRANCH_DIR,mergeBranch));
-        Commit mergeBranchCommit=getCommitObject(mergeBranchCommitID);
-
-        int currentBranchLength=getBranchLength(currentBranch);
-        int mergeBranchLength=getBranchLength(mergeBranch);
-        int deltaLength=abs(currentBranchLength-mergeBranchLength);
-
-        // currentBranchLength is longer ,it go first.
-        if (currentBranchLength>=mergeBranchLength){
-
-            for (int i=0;i<deltaLength;i++){
-                currentBranchCommit=getCommitObject(currentBranchCommit.getParentID());
-            }
-            Commit SplitPoint=findSplitPointCommit(currentBranchCommit,mergeBranchCommit);
-            return getCommitID(SplitPoint);
-        }else {
-
-            for (int i=0;i<deltaLength;i++){
-                mergeBranchCommit=getCommitObject(mergeBranchCommit.getParentID());
-            }
-            Commit SplitPoint=findSplitPointCommit(currentBranchCommit,mergeBranchCommit);
-            return  getCommitID(SplitPoint);
-        }
-    }
 }

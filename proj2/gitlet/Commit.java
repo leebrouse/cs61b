@@ -65,6 +65,10 @@ public class Commit implements Serializable {
         return parentID;
     }
 
+    public String getSecondParentID() {
+        return secondParentID;
+    }
+
     public HashMap<String, String> getFileBlob() {
         return fileBlob;
     }

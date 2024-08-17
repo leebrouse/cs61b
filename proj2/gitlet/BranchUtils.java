@@ -40,6 +40,16 @@ public class BranchUtils {
         return readContentsAsString(HEAD_DIR);
     }
 
+    /** check whether the branch is existed or not  */
+    public static boolean checkBranchExist(String branchName){
+        List<String> branchList=plainFilenamesIn(BRANCH_DIR);
+        if (branchList.contains(branchName)){
+            return true;
+        }
+
+        return false;
+    }
+
     /** Check whether the cwdFile should be overwritten (using branchName) ,when checkout branch,check the file is tracked */
     public static boolean branchFileOverWrite(String cwdFileName,String branch){
         File cwdFile=join(CWD,cwdFileName);
@@ -72,6 +82,7 @@ public class BranchUtils {
         return true;
     }
 
+    /** Check whether the branch is tracked or not */
     public static boolean  branchTracked(String branch){
         List<String> cwdFileList=plainFilenamesIn(CWD);
         return fileAddStageTracked(cwdFileList,branch);
