@@ -44,7 +44,7 @@ public class Main {
             case "commit":
 
                 if(args.length != 2){
-                    System.out.println("Please enter a commit message.");
+                    System.out.print("Please enter a commit message.");
                     return ;
                 }
                 Repository.commit(args[1]);

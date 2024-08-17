@@ -79,6 +79,7 @@ public class MergeUtils {
                 join(BLOBS_DIR,commit.getFileBlob().get(fileName.getName()))
         ));
     }
+
     /** conflictContent 1.txt*/
     public static String firstConflictContent(String currentBranchBlobID, String mergeBlobID){
       String  conflictContent="<<<<<<< HEAD\n" +
@@ -98,6 +99,34 @@ public class MergeUtils {
                                 ">>>>>>>\n";
 
         return  conflictContent;
+    }
+
+    /** check Special-merge */
+    public static boolean checkAncestor(String branchName) {
+        Commit currentCommit=getCurrentCommit();
+
+        while (true){
+
+            if (currentCommit.getParentID()==null){
+                return false;
+            }
+
+            if (readContentsAsString(join(BRANCH_DIR, branchName)).equals(getCommitID(currentCommit))){
+                return true;
+            }
+            currentCommit=getCommitObject(currentCommit.getParentID());
+        }
+    }
+    /** check Fast-Forward */
+    public static boolean checkFastForward(String branchName){
+        Commit currentCommit=getCommitObject(readContentsAsString(join(BRANCH_DIR,branchName)));
+        String currentCommitID=getCurrentCommitID();
+        if (currentCommitID.equals(currentCommit.getParentID())){
+            File cwdFile=join(CWD,"f.txt");
+            cwdFile.delete();
+            return true;
+        }
+        return false;
     }
 
     /** Check two file is different or not*/
@@ -174,9 +203,6 @@ public class MergeUtils {
 
         Commit currentBranchCommit=readObject(currentBranchCommitFile, Commit.class);
         Commit mergeBranchCommit=readObject(mergeBranchCommitFile, Commit.class);
-
-        Collection<String> currentBranchFiles=currentBranchCommit.getFileBlob().keySet();
-        Collection<String> mergeBranchFiles=mergeBranchCommit.getFileBlob().keySet();
 
         //remove the file is existed in HEAD and not existed in mergeBranch
         Commit splitPoint=findSplitPoint(getCurrentBranch(),branchName);

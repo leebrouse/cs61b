@@ -404,7 +404,12 @@ public class Repository {
             System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
         }else if (!checkAddStageEmpty()){
             System.out.println("You have uncommitted changes.");
-        }else {
+        }else if (checkAncestor(branchName)){
+                System.out.println("Given branch is an ancestor of the current branch.");
+        } else if (checkFastForward(branchName)) {
+
+                System.out.println("Current branch fast-forwarded.");
+        } else {
 
             HashMap<String,String> mergeCommitHashmap = createMergeCommitHashmap(branchName);
 
