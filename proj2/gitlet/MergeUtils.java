@@ -73,11 +73,31 @@ public class MergeUtils {
             removeFIle.delete();
         }
     }
-
+    /** create required file*/
     public static void creatFile(File fileName,Commit commit){
         writeContents(fileName,readContentsAsString(
                 join(BLOBS_DIR,commit.getFileBlob().get(fileName.getName()))
         ));
+    }
+    /** conflictContent 1.txt*/
+    public static String firstConflictContent(String currentBranchBlobID, String mergeBlobID){
+      String  conflictContent="<<<<<<< HEAD\n" +
+                                readBlob(currentBranchBlobID) +
+                                "=======\n" +
+                                readBlob(mergeBlobID)+
+                                ">>>>>>>\n";
+
+      return  conflictContent;
+    }
+
+    /** conflictContent 2.txt*/
+    public static String secondConflictContent(String currentBranchBlobID){
+        String   conflictContent="<<<<<<< HEAD\n" +
+                                readBlob(currentBranchBlobID) +
+                                "=======\n" +
+                                ">>>>>>>\n";
+
+        return  conflictContent;
     }
 
     /** Check two file is different or not*/
@@ -100,7 +120,16 @@ public class MergeUtils {
                 fileRemove(splitPointFile);
             }else if (!mergeBranchFiles.contains(splitPointFile)&&currentBranchFiles.contains(splitPointFile)){
                 //check whether having conflict(splitPoint content whether is different from the HeadFile content)
-                fileRemove(splitPointFile);
+                if (checkDifferent(splitPoint,currentBranchCommit,splitPointFile)){
+                    File conflictFile=join(CWD,splitPointFile);
+                    writeContents(
+                            conflictFile,
+                            secondConflictContent(currentBranchCommit.getFileBlob().get(splitPointFile))
+                    );
+                    System.out.println("Encountered a merge conflict.");
+                }else if (!checkDifferent(splitPoint,currentBranchCommit,splitPointFile)){
+                    fileRemove(splitPointFile);
+                }
             }else if (!mergeBranchFiles.contains(splitPointFile)&&!currentBranchFiles.contains(splitPointFile)){
                 fileRemove(splitPointFile);
             } else if (mergeBranchFiles.contains(splitPointFile)&&currentBranchFiles.contains(splitPointFile)) {
@@ -108,9 +137,18 @@ public class MergeUtils {
                 if (!checkDifferent(splitPoint,currentBranchCommit,splitPointFile) && checkDifferent(currentBranchCommit,mergeBranchCommit,splitPointFile)){
                     File cwdFile=join(CWD,splitPointFile);
                     creatFile(cwdFile,mergeBranchCommit);
-                }else if (checkDifferent(splitPoint,currentBranchCommit,splitPointFile) && checkDifferent(currentBranchCommit,mergeBranchCommit,splitPointFile)){
+                }else if (!checkDifferent(splitPoint,mergeBranchCommit,splitPointFile) && checkDifferent(currentBranchCommit,mergeBranchCommit,splitPointFile)){
                     File cwdFile=join(CWD,splitPointFile);
                     creatFile(cwdFile,currentBranchCommit);
+                }else {
+                    File conflictFile=join(CWD,splitPointFile);
+                    writeContents(
+                            conflictFile,
+                            firstConflictContent(currentBranchCommit.getFileBlob().get(splitPointFile),
+                                    mergeBranchCommit.getFileBlob().get(splitPointFile)
+                            )
+                    );
+                    System.out.println("Encountered a merge conflict.");
                 }
             }
         }
@@ -153,52 +191,6 @@ public class MergeUtils {
         }
 
         return requiredMap;
-    }
-
-    /**check whether having conflict file */
-    public static boolean checkConflict(Collection<String> currentBranchFiles, String branchName){
-
-        Commit currentCommit=getCurrentCommit();
-        Commit SplitPointCommit=findSplitPoint(getCurrentBranch(),branchName);
-
-        Collection<String> SplitPointCommitList=SplitPointCommit.getFileBlob().keySet();
-        for (String currentBranchFile:currentBranchFiles){
-            if (SplitPointCommitList.contains(currentBranchFile)){
-
-                String SplitPointBlobID=SplitPointCommit.getFileBlob().get(currentBranchFile);
-                String currentBranchBlobID=currentCommit.getFileBlob().get(currentBranchFile);
-
-                String mergeBlobID;
-                Commit mergeCommit=readObject(join(COMMIT_DIR,readContentsAsString(join(BRANCH_DIR,branchName))),Commit.class);
-                if (mergeCommit.getFileBlob().containsKey(currentBranchFile)){
-                    mergeBlobID = mergeCommit.getFileBlob().get(currentBranchFile);
-                }else {
-                    mergeBlobID=null;
-                }
-
-                //conFlict File content
-                String conFlictContent;
-                if (checkReadBlob(mergeBlobID)){
-
-                     conFlictContent="<<<<<<< HEAD\n" +
-                            readBlob(currentBranchBlobID) +
-                            "=======\n" +
-                            readBlob(mergeBlobID)+
-                            ">>>>>>>\n";
-                }else {
-                    conFlictContent="<<<<<<< HEAD\n" +
-                            readBlob(currentBranchBlobID) +
-                            "=======\n" +
-                            ">>>>>>>\n";
-                }
-
-                if (!SplitPointBlobID.equals(currentBranchBlobID)){
-                    writeContents(join(CWD,currentBranchFile),conFlictContent);
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
 }

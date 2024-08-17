@@ -394,12 +394,7 @@ public class Repository {
         }
     }
 
-
     public static void merge(String branchName) {
-        String currentBranchCommitID=getCurrentCommitID();
-        File currentBranchCommitFile=join(COMMIT_DIR,currentBranchCommitID);
-        Commit currentBranchCommit=readObject(currentBranchCommitFile, Commit.class);
-        Collection<String> currentBranchFiles=currentBranchCommit.getFileBlob().keySet();
 
         if (getCurrentBranch().equals(branchName)) {//merge err check
             System.out.println("Cannot merge a branch with itself.");
@@ -410,10 +405,6 @@ public class Repository {
         }else if (!checkAddStageEmpty()){
             System.out.println("You have uncommitted changes.");
         }else {
-
-            if (checkConflict(currentBranchFiles,branchName)){
-                System.out.println("Encountered a merge conflict. ");
-            }
 
             HashMap<String,String> mergeCommitHashmap = createMergeCommitHashmap(branchName);
 
@@ -426,6 +417,5 @@ public class Repository {
             upDateMaster(mergeCommitID);
 
         }
-        //Change the log part (adding: print the log of merging branch part until the nextCommit is SplitPoint)
     }
 }
