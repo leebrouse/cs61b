@@ -78,12 +78,14 @@ public class Main {
             case "branch":
                 if(args.length != 2){
                     System.out.println("Usage:java gitlet.Main branch [branch name]");
+                    return;
                 }
                 Repository.branch(args[1]);
                 break;
             case "rm-branch":
                 if(args.length != 2){
                     System.out.println("Usage:java gitlet.Main rm-branch [branch name]");
+                    return;
                 }
                 Repository.rm_branch(args[1]);
                 break;
